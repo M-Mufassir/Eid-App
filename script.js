@@ -1,10 +1,10 @@
 // ============================================================
 //  Eid Video Studio – Modern Animation Engine
 //  Uses local assets: Eid Photos/ & Eid - songs/
-//  Animations array with 8 dynamic styles
+//  Fixed randomness, photo cropping, and video export
 // ============================================================
 
-// ---------- 1. Asset arrays (your local files) ----------
+// ---------- 1. Asset arrays ----------
 const templates = [
   { id: "t1", label: "Golden Mosque", src: "Eid Photos/1.webp" },
   { id: "t2", label: "Starry Night", src: "Eid Photos/2.webp" },
@@ -56,7 +56,7 @@ const greetings = [
   "May the spirit of Eid illuminate your life."
 ];
 
-// ---------- 2. Layout definitions (unchanged) ----------
+// ---------- 2. Layout definitions ----------
 const layoutSlots = {
   classic: {
     1: [{ x: 0.5, y: 0.38, size: 0.31, shape: "circle" }],
@@ -192,21 +192,20 @@ function getRandomAnimation() {
   return animations[Math.floor(Math.random() * animations.length)];
 }
 
-// ---------- 4. Global state (initialized after DOM ready) ----------
+// ---------- 4. Global state ----------
 let state = {
-  selectedTemplateId: null,
+  selectedTemplateId: null,     // used only in custom mode
   uploadedImages: [],
   customAudioTrack: null,
   isGenerating: false,
   canvas: null,
-  ctx: null,
-  currentAnimation: null
+  ctx: null
 };
 
 // DOM elements (populated after DOM ready)
 let el = {};
 
-// Helper functions
+// ---------- 5. Helper functions ----------
 function setStatus(msg, isError = false) {
   if (!el.statusMsg) return;
   el.statusMsg.textContent = msg;
@@ -217,7 +216,7 @@ function showLoading(visible, message = "Generating video...") {
   if (!el.loadingOverlay) return;
   if (visible) {
     el.loadingOverlay.classList.add("active");
-    el.loadingText.textContent = message;
+    if (el.loadingText) el.loadingText.textContent = message;
   } else {
     el.loadingOverlay.classList.remove("active");
   }
@@ -246,7 +245,7 @@ function isCustomEnabled() {
   return el.customModeToggle?.checked;
 }
 
-// ---------- 5. Image & audio loading ----------
+// ---------- 6. Image & audio loading ----------
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -280,7 +279,28 @@ async function getAudioDuration(src) {
   });
 }
 
-// ---------- 6. Drawing with modern animation ----------
+// ---------- 7. Drawing with cover cropping (no distortion) ----------
+function drawCover(ctx, img, x, y, w, h) {
+  // Calculate scale to cover the area (maintain aspect ratio, crop excess)
+  const imgAspect = img.width / img.height;
+  const targetAspect = w / h;
+  let drawW, drawH, dx, dy;
+  if (imgAspect > targetAspect) {
+    // Image is wider: scale to match height, crop width
+    drawH = h;
+    drawW = img.width * (h / img.height);
+    dx = x + (w - drawW) / 2;
+    dy = y;
+  } else {
+    // Image is taller: scale to match width, crop height
+    drawW = w;
+    drawH = img.height * (w / img.width);
+    dx = x;
+    dy = y + (h - drawH) / 2;
+  }
+  ctx.drawImage(img, dx, dy, drawW, drawH);
+}
+
 function drawRoundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -321,7 +341,7 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
   ctx.fillStyle = "rgba(0,0,0,0.35)";
   ctx.fillRect(0, 0, w, h);
 
-  // Decorative particles (subtle)
+  // Decorative particles
   ctx.fillStyle = "rgba(244, 217, 151, 0.2)";
   for (let i = 0; i < 80; i++) {
     ctx.beginPath();
@@ -329,8 +349,8 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
     ctx.fill();
   }
 
-  // Get animation motion values at current time
-  const t = progress * Math.PI * 2; // full cycle
+  // Get animation motion values
+  const t = progress * Math.PI * 2;
   const motion = animation.getMotion(t);
   const photoYoffset = motion.photoY;
   const photoScale = motion.photoScale;
@@ -342,20 +362,35 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
     const size = slot.size * w * photoScale;
     const x = slot.x * w - size / 2;
     const y = slot.y * h - size / 2 + photoYoffset;
+
+    // Draw decorative frame
     ctx.save();
     if (slot.shape === "circle") {
       ctx.beginPath();
+      ctx.arc(x + size / 2, y + size / 2, size / 2 + 8, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(241, 210, 136, 0.85)";
+      ctx.fill();
+    } else {
+      drawRoundRect(ctx, x - 8, y - 8, size + 16, size + 16, 34);
+      ctx.fillStyle = "rgba(241, 210, 136, 0.86)";
+      ctx.fill();
+    }
+
+    // Clip to shape and draw photo with cover
+    ctx.beginPath();
+    if (slot.shape === "circle") {
       ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
-      ctx.clip();
     } else {
       drawRoundRect(ctx, x, y, size, size, 26);
-      ctx.clip();
     }
-    ctx.drawImage(img, x, y, size, size);
+    ctx.clip();
+    drawCover(ctx, img, x, y, size, size);
     ctx.restore();
+
+    // Outer border
     ctx.beginPath();
     ctx.strokeStyle = "#f4d58c";
-    ctx.lineWidth = 8;
+    ctx.lineWidth = 6;
     if (slot.shape === "circle") {
       ctx.arc(x + size / 2, y + size / 2, size / 2 + 4, 0, Math.PI * 2);
     } else {
@@ -396,38 +431,65 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
 
   ctx.font = "24px Cairo";
   ctx.fillStyle = "#ffecb3";
-  ctx.fillText(CREATOR_SIGNATURE, w - 40, h - 28);
+  ctx.fillText("Created By Mufassir", w - 40, h - 28);
   ctx.shadowBlur = 0;
 }
 
-const CREATOR_SIGNATURE = "Created By Mufassir";
 const MAX_VIDEO_DURATION_MS = 40000;
 
-// ---------- 7. Build render data (random animation always) ----------
+// ---------- 8. Build render data (random or custom) ----------
 async function buildRenderData() {
   if (!state.uploadedImages.length) throw new Error("Upload at least one photo.");
 
   const userImages = await loadUserImages(state.uploadedImages.slice(0, 3));
-  const templateObj = templates.find(t => t.id === state.selectedTemplateId) || templates[0];
+  const isCustom = isCustomEnabled();
+
+  // Determine template
+  let templateObj;
+  if (isCustom && state.selectedTemplateId) {
+    templateObj = templates.find(t => t.id === state.selectedTemplateId) || templates[0];
+  } else {
+    templateObj = randomFrom(templates);
+    // Update UI to reflect random template (optional, but nice)
+    if (el.templateGrid) {
+      const card = document.querySelector(`.template-card[data-id="${templateObj.id}"]`);
+      if (card) {
+        document.querySelectorAll(".template-card").forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+      }
+    }
+    state.selectedTemplateId = templateObj.id;
+  }
   const templateImage = await loadImage(templateObj.src);
 
+  // Determine greeting
   let greeting = "";
   const mode = getSelectedMode();
-  if (mode === "default") greeting = el.defaultGreeting.value;
-  else if (mode === "custom") greeting = el.customGreeting.value.trim() || greetings[0];
+  if (isCustom && mode === "default") greeting = el.defaultGreeting.value;
+  else if (isCustom && mode === "custom") greeting = el.customGreeting.value.trim() || greetings[0];
   else greeting = randomFrom(greetings);
 
   const sender = el.senderName.value.trim() || "From Your Family";
-  const layout = el.layoutSelect.value;
 
-  let selectedAudioTrack = null;
-  const audioVal = el.audioSelect.value;
-  if (audioVal === "custom-upload" && state.customAudioTrack) {
-    selectedAudioTrack = state.customAudioTrack;
+  // Determine layout
+  let layout;
+  if (isCustom) {
+    layout = el.layoutSelect.value;
   } else {
-    const track = audioTracks.find(t => t.id === audioVal);
-    if (track) selectedAudioTrack = track;
-    else selectedAudioTrack = { id: "none", src: null, label: "No Audio", durationMs: 20000 };
+    layout = randomFrom(["classic", "ribbon", "collage"]);
+    if (el.layoutSelect) el.layoutSelect.value = layout;
+  }
+
+  // Determine audio track
+  let selectedAudioTrack;
+  const audioVal = isCustom ? el.audioSelect.value : null;
+  if (isCustom && audioVal === "custom-upload" && state.customAudioTrack) {
+    selectedAudioTrack = state.customAudioTrack;
+  } else if (isCustom && audioVal) {
+    selectedAudioTrack = audioTracks.find(t => t.id === audioVal) || audioTracks[0];
+  } else {
+    selectedAudioTrack = randomFrom(audioTracks);
+    if (el.audioSelect) el.audioSelect.value = selectedAudioTrack.id;
   }
 
   let clipDurationMs = selectedAudioTrack.durationMs || 20000;
@@ -437,8 +499,8 @@ async function buildRenderData() {
   }
   clipDurationMs = Math.min(MAX_VIDEO_DURATION_MS, Math.max(8000, clipDurationMs));
 
-  // Always pick a random animation
-  const randomAnimation = getRandomAnimation();
+  // Animation is always random (both modes)
+  const animation = getRandomAnimation();
 
   return {
     templateImage,
@@ -450,11 +512,11 @@ async function buildRenderData() {
     canvasWidth: 1080,
     canvasHeight: 1080,
     selectedAudioTrack,
-    animation: randomAnimation
+    animation
   };
 }
 
-// ---------- 8. Video generation with countdown ----------
+// ---------- 9. Video generation with countdown ----------
 async function generateVideo() {
   if (state.isGenerating) return;
   state.isGenerating = true;
@@ -500,7 +562,7 @@ async function generateVideo() {
       const remaining = Math.max(0, durationMs - elapsed) / 1000;
       updateCountdown(remaining, totalSeconds);
       drawGreetingCard(offCtx, renderData, progress, renderData.animation);
-      drawGreetingCard(state.ctx, renderData, progress, renderData.animation); // preview
+      drawGreetingCard(state.ctx, renderData, progress, renderData.animation);
       if (progress < 1) {
         animFrame = requestAnimationFrame(renderFrame);
       } else {
@@ -535,7 +597,7 @@ async function generateVideo() {
   }
 }
 
-// ---------- 9. PNG download ----------
+// ---------- 10. PNG download ----------
 async function onDownloadPng() {
   try {
     if (!state.uploadedImages.length) throw new Error("Upload photos first.");
@@ -552,7 +614,7 @@ async function onDownloadPng() {
   }
 }
 
-// ---------- 10. UI population and event handlers ----------
+// ---------- 11. UI population and event handlers ----------
 function populateTemplates() {
   if (!el.templateGrid) return;
   el.templateGrid.innerHTML = "";
@@ -562,12 +624,15 @@ function populateTemplates() {
     btn.dataset.id = tmpl.id;
     btn.innerHTML = `<img src="${tmpl.src}" alt="${tmpl.label}" loading="lazy"><span>${tmpl.label}</span>`;
     btn.onclick = () => {
-      state.selectedTemplateId = tmpl.id;
-      document.querySelectorAll(".template-card").forEach(c => c.classList.remove("active"));
-      btn.classList.add("active");
+      if (isCustomEnabled()) {
+        state.selectedTemplateId = tmpl.id;
+        document.querySelectorAll(".template-card").forEach(c => c.classList.remove("active"));
+        btn.classList.add("active");
+      }
     };
     el.templateGrid.appendChild(btn);
   });
+  // Initially select first template (custom mode default)
   const firstCard = document.querySelector(".template-card");
   if (firstCard) {
     firstCard.classList.add("active");
@@ -638,16 +703,19 @@ function onAudioSelectChange() {
 
 function onSurprise() {
   if (state.isGenerating) return;
-  const randTemplate = randomFrom(templates);
-  state.selectedTemplateId = randTemplate.id;
-  document.querySelectorAll(".template-card").forEach(c => c.classList.remove("active"));
-  const activeCard = document.querySelector(`.template-card[data-id="${randTemplate.id}"]`);
-  if (activeCard) activeCard.classList.add("active");
-  el.layoutSelect.value = randomFrom(["classic", "ribbon", "collage"]);
-  document.querySelector('input[name="greetingMode"][value="random"]').checked = true;
-  const randAudio = randomFrom(audioTracks);
-  if (randAudio) el.audioSelect.value = randAudio.id;
-  setStatus("Surprise! New random settings applied.");
+  // This button sets random mode and random selections
+  if (!isCustomEnabled()) {
+    // If already in random mode, just trigger a new random generation
+    // We'll just reload the page? No, better to call generateVideo which already picks random.
+    // But we also want to update UI to reflect random choices? Not necessary, because generateVideo will pick fresh random.
+    setStatus("Surprise! New random generation will happen on next Create Video.");
+    return;
+  }
+  // If custom mode is on, we could offer to randomize custom selections, but let's keep simple:
+  // Switch to random mode and then generate.
+  if (el.customModeToggle) el.customModeToggle.checked = false;
+  toggleDesignMode();
+  setStatus("Switched to Random mode. Click Create Video for surprise!");
 }
 
 function toggleDesignMode() {
@@ -655,10 +723,20 @@ function toggleDesignMode() {
   if (el.customControls) el.customControls.disabled = !custom;
   if (el.customControlsDropdown) el.customControlsDropdown.open = custom;
   if (el.designModeLabel) el.designModeLabel.textContent = custom ? "Custom Design ON" : "Randomness ON";
-  if (el.designModeHint) el.designModeHint.textContent = custom ? "You choose template, layout, song, greeting – animation is random." : "Everything is random.";
+  if (el.designModeHint) el.designModeHint.textContent = custom ? "You choose template, layout, song, greeting – animation is random." : "Everything is random on each click.";
   const mode = getSelectedMode();
   if (el.defaultGreeting) el.defaultGreeting.disabled = !custom || mode !== "default";
   if (el.customGreeting) el.customGreeting.disabled = !custom || mode !== "custom";
+  // Enable/disable template selection in UI
+  document.querySelectorAll(".template-card").forEach(card => {
+    if (custom) {
+      card.style.opacity = "1";
+      card.style.cursor = "pointer";
+    } else {
+      card.style.opacity = "0.7";
+      card.style.cursor = "default";
+    }
+  });
 }
 
 function onGreetingModeChange() {
@@ -706,7 +784,7 @@ function drawPlaceholder() {
   state.ctx.fillText("Upload photos & click Create Video", 540, 580);
 }
 
-// ---------- 11. Initialization after DOM ready ----------
+// ---------- 12. Initialization ----------
 document.addEventListener("DOMContentLoaded", () => {
   // Assign all DOM elements
   el = {
@@ -736,7 +814,6 @@ document.addEventListener("DOMContentLoaded", () => {
     canvas: document.getElementById("greetingCanvas")
   };
 
-  // Validate essential elements
   if (!el.canvas) {
     console.error("Canvas element not found!");
     return;
@@ -748,12 +825,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Now initialize UI
   populateTemplates();
   populateAudioDropdown();
   populateGreetingDropdown();
   bindEvents();
-  toggleDesignMode();
+  toggleDesignMode();  // sets initial UI state
   drawPlaceholder();
   setStatus("Ready. Upload photos and click Create Video.");
 });
