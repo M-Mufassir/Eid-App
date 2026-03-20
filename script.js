@@ -1,7 +1,20 @@
-﻿const templates = [
-  { id: "moonlight-gold", label: "Moonlight Gold", src: "Eid Photos/3.png" },
-  { id: "lantern-night", label: "Lantern Night", src: "Eid Photos/5.jpg" },
-  { id: "royal-eid", label: "Royal Eid", src: "Eid Photos/14.webp" }
+const templates = [
+  { id: "template-1", label: "Template 1", src: "Eid Photos/1.webp" },
+  { id: "template-2", label: "Template 2", src: "Eid Photos/2.webp" },
+  { id: "template-3", label: "Template 3", src: "Eid Photos/3.png" },
+  { id: "template-4", label: "Template 4", src: "Eid Photos/4.avif" },
+  { id: "template-5", label: "Template 5", src: "Eid Photos/5.jpg" },
+  { id: "template-6", label: "Template 6", src: "Eid Photos/6.avif" },
+  { id: "template-7", label: "Template 7", src: "Eid Photos/7.avif" },
+  { id: "template-8", label: "Template 8", src: "Eid Photos/8.avif" },
+  { id: "template-9", label: "Template 9", src: "Eid Photos/9.png" },
+  { id: "template-10", label: "Template 10", src: "Eid Photos/10.avif" },
+  { id: "template-11", label: "Template 11", src: "Eid Photos/11.avif" },
+  { id: "template-12", label: "Template 12", src: "Eid Photos/12.jpg" },
+  { id: "template-13", label: "Template 13", src: "Eid Photos/13.avif" },
+  { id: "template-14", label: "Template 14", src: "Eid Photos/14.webp" },
+  { id: "template-15", label: "Template 15", src: "Eid Photos/15.jpg" },
+  { id: "template-16", label: "Template 16", src: "Eid Photos/16.jpg" }
 ];
 
 const audioTracks = [
@@ -30,6 +43,8 @@ const audioTracks = [
 
 const CUSTOM_AUDIO_ID = "custom-upload";
 const GIF_EXPORT_ENABLED = false;
+const IMAGE_MAX_DIMENSION = 3000;
+const IMAGE_NAME_PATTERN = /\.(avif|bmp|gif|heic|heif|jpe?g|jfif|png|tiff?|webp)$/i;
 
 const greetings = [
   "Eid Mubarak. May this day bring peace, mercy, and blessings for your home.",
@@ -88,7 +103,7 @@ const layoutSlots = {
 const state = {
   selectedTemplateId: templates[0].id,
   selectedAudioId: "track-1",
-  uploadedImageUrls: [],
+  uploadedImages: [],
   customAudioTrack: null,
   isAnimating: false,
   animationHandle: null,
@@ -97,16 +112,21 @@ const state = {
 };
 
 const exportConfig = {
-  previewDurationMs: 2600,
-  clipDurationMs: 4200,
+  previewDurationMs: 20000,
+  clipDurationMs: 20000,
   gifFps: 12,
   defaultVideoDurationMs: 20000,
-  maxVideoDurationMs: 20000,
+  maxVideoDurationMs: 300000,
   videoFadeDurationMs: 1800,
   audioMetadataTimeoutMs: 7000
 };
 
 const el = {
+  customModeToggle: document.getElementById("customModeToggle"),
+  designModeLabel: document.getElementById("designModeLabel"),
+  designModeHint: document.getElementById("designModeHint"),
+  customControlsDropdown: document.getElementById("customControlsDropdown"),
+  customControls: document.getElementById("customControls"),
   templateGrid: document.getElementById("templateGrid"),
   photoUpload: document.getElementById("photoUpload"),
   uploadList: document.getElementById("uploadList"),
@@ -149,6 +169,10 @@ function getMediaSrc(src) {
 function setStatus(message, isError = false) {
   el.statusMsg.textContent = message;
   el.statusMsg.classList.toggle("error", isError);
+}
+
+function isCustomDesignEnabled() {
+  return Boolean(el.customModeToggle?.checked);
 }
 
 function getSelectedMode() {
@@ -300,18 +324,15 @@ async function resolveAudioDurationMs(src) {
 }
 
 function buildVideoTimingFromDurationMs(durationMs) {
-  const boundedDurationMs = clamp(
+  const targetDurationMs = Math.max(
     Math.round(durationMs),
-    1000,
-    exportConfig.maxVideoDurationMs
+    exportConfig.defaultVideoDurationMs
   );
-
-  const wasCapped = durationMs > exportConfig.maxVideoDurationMs;
+  const boundedDurationMs = clamp(targetDurationMs, 1000, exportConfig.maxVideoDurationMs);
+  const wasCapped = targetDurationMs > exportConfig.maxVideoDurationMs;
   return {
     clipDurationMs: boundedDurationMs,
-    fadeOutStartMs: wasCapped
-      ? Math.max(0, exportConfig.maxVideoDurationMs - exportConfig.videoFadeDurationMs)
-      : null,
+    fadeOutStartMs: null,
     wasCapped
   };
 }
@@ -506,14 +527,72 @@ function getSelectedAudioTrack() {
   return audioTracks.find((item) => item.id === selectedId) || audioTracks[0];
 }
 
+function getRandomAudioTrack() {
+  const candidates = audioTracks.filter((track) => track.src);
+  if (!candidates.length) {
+    return getSelectedAudioTrack();
+  }
+  return randomFrom(candidates);
+}
+
+function getSelectOptionValues(selectElement) {
+  return Array.from(selectElement.options)
+    .map((option) => option.value)
+    .filter(Boolean);
+}
+
+function getRandomDesignSelection() {
+  const layoutOptions = getSelectOptionValues(el.layoutSelect);
+  const animationOptions = getSelectOptionValues(el.animationSelect);
+
+  return {
+    selectedTemplate: randomFrom(templates),
+    layout: randomFrom(layoutOptions.length ? layoutOptions : ["classic"]),
+    animation: randomFrom(animationOptions.length ? animationOptions : ["fade"]),
+    greeting: randomFrom(greetings),
+    selectedAudioTrack: getRandomAudioTrack(),
+    isRandomMode: true
+  };
+}
+
+function getCustomDesignSelection() {
+  return {
+    selectedTemplate: getSelectedTemplate(),
+    layout: el.layoutSelect.value,
+    animation: el.animationSelect.value,
+    greeting: getSelectedGreeting(),
+    selectedAudioTrack: getSelectedAudioTrack(),
+    isRandomMode: false
+  };
+}
+
+function resolveDesignSelection() {
+  const useCustom = isCustomDesignEnabled();
+  const selection = useCustom ? getCustomDesignSelection() : getRandomDesignSelection();
+
+  state.selectedTemplateId = selection.selectedTemplate.id;
+  markSelectedTemplate();
+  el.layoutSelect.value = selection.layout;
+  el.animationSelect.value = selection.animation;
+
+  if (selection.selectedAudioTrack?.id) {
+    const hasAudioOption = Array.from(el.audioSelect.options).some((option) => option.value === selection.selectedAudioTrack.id);
+    if (hasAudioOption) {
+      el.audioSelect.value = selection.selectedAudioTrack.id;
+    }
+    state.selectedAudioId = selection.selectedAudioTrack.id;
+  }
+
+  return selection;
+}
+
 function toTitleFileNames(fileList) {
   const names = fileList.map((file) => file.name);
   return names.join(" | ");
 }
 
-function clearUploadedUrls() {
-  state.uploadedImageUrls.forEach((url) => URL.revokeObjectURL(url));
-  state.uploadedImageUrls = [];
+function clearUploadedImages() {
+  state.uploadedImages = [];
 }
 
 function clearCustomAudioTrack() {
@@ -535,13 +614,98 @@ function updateUploadSummary(files) {
   el.uploadList.textContent = `${files.length} selected: ${toTitleFileNames(files)}`;
 }
 
+function isLikelyImageFile(file) {
+  if (!file) {
+    return false;
+  }
+
+  if (file.type?.startsWith("image/")) {
+    return true;
+  }
+
+  return IMAGE_NAME_PATTERN.test(file.name || "");
+}
+
 function loadImage(source) {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    img.decoding = "async";
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(`Failed to load image: ${source}`));
     img.src = source;
   });
+}
+
+function getRenderableDimensions(image) {
+  const width = image.naturalWidth || image.width || 0;
+  const height = image.naturalHeight || image.height || 0;
+  return { width, height };
+}
+
+function normalizeImageForCanvas(image, maxDimension = IMAGE_MAX_DIMENSION) {
+  const { width, height } = getRenderableDimensions(image);
+  if (!width || !height) {
+    throw new Error("Unsupported image dimensions.");
+  }
+
+  const maxSide = Math.max(width, height);
+  if (maxSide <= maxDimension) {
+    return image;
+  }
+
+  const scale = maxDimension / maxSide;
+  const targetWidth = Math.max(1, Math.round(width * scale));
+  const targetHeight = Math.max(1, Math.round(height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+  const canvasCtx = canvas.getContext("2d");
+  if (!canvasCtx) {
+    throw new Error("Unable to prepare uploaded image for rendering.");
+  }
+  canvasCtx.imageSmoothingEnabled = true;
+  canvasCtx.imageSmoothingQuality = "high";
+  canvasCtx.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+  if (typeof image.close === "function") {
+    image.close();
+  }
+
+  return canvas;
+}
+
+async function decodeImageFromFile(file) {
+  if (typeof createImageBitmap === "function") {
+    try {
+      return await createImageBitmap(file, { imageOrientation: "from-image" });
+    } catch (_orientationDecodeError) {
+      try {
+        return await createImageBitmap(file);
+      } catch (_decodeError) {
+        // Fall back to <img> decoding below.
+      }
+    }
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    return await loadImage(objectUrl);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function loadUploadedImage(file) {
+  if (!isLikelyImageFile(file)) {
+    throw new Error(`"${file.name}" is not a supported image file.`);
+  }
+
+  try {
+    const decoded = await decodeImageFromFile(file);
+    return normalizeImageForCanvas(decoded);
+  } catch (_error) {
+    throw new Error(`Unable to read "${file.name}". Try JPG, PNG, WEBP, or AVIF.`);
+  }
 }
 
 function fitCover(ctxArg, image, x, y, width, height) {
@@ -903,9 +1067,40 @@ function drawGreetingCard(ctxArg, renderData, progress) {
 }
 
 function toggleGreetingInputs() {
+  if (!isCustomDesignEnabled()) {
+    el.defaultGreeting.disabled = true;
+    el.customGreeting.disabled = true;
+    return;
+  }
+
   const mode = getSelectedMode();
   el.defaultGreeting.disabled = mode !== "default";
   el.customGreeting.disabled = mode !== "custom";
+}
+
+function toggleDesignModeControls() {
+  const customEnabled = isCustomDesignEnabled();
+
+  el.customControls.disabled = !customEnabled;
+  el.surpriseBtn.disabled = !customEnabled;
+  el.customControlsDropdown.open = customEnabled;
+
+  if (customEnabled) {
+    el.designModeLabel.textContent = "Custom Design ON";
+    el.designModeHint.textContent = "Custom is ON. Use the controls below to fully design your card.";
+    prepareAudioPreview();
+  } else {
+    el.designModeLabel.textContent = "Randomness ON (auto)";
+    el.designModeHint.textContent = "Custom is OFF. Upload image + name, and the app randomizes wish, animation, template, and song.";
+    clearAudioPreview();
+
+    const randomMode = document.querySelector('input[name="greetingMode"][value="random"]');
+    if (randomMode) {
+      randomMode.checked = true;
+    }
+  }
+
+  toggleGreetingInputs();
 }
 
 function populateTemplates() {
@@ -996,13 +1191,18 @@ function upsertCustomAudioOption() {
   el.audioSelect.appendChild(option);
 }
 
-function prepareAudioPreview() {
-  const track = getSelectedAudioTrack();
+function clearAudioPreview() {
+  el.audioPreview.pause();
+  el.audioPreview.loop = false;
+  el.audioPreview.removeAttribute("src");
+  el.audioPreview.load();
+}
+
+function prepareAudioPreview(trackOverride = null) {
+  const track = trackOverride || getSelectedAudioTrack();
 
   if (!track.src) {
-    el.audioPreview.pause();
-    el.audioPreview.removeAttribute("src");
-    el.audioPreview.load();
+    clearAudioPreview();
     return;
   }
 
@@ -1044,18 +1244,20 @@ function onAudioSelectionChange() {
 }
 
 async function buildRenderData() {
-  if (!state.uploadedImageUrls.length) {
+  if (!state.uploadedImages.length) {
     throw new Error("Please upload at least one photo before generating.");
   }
 
-  const selectedTemplate = getSelectedTemplate();
+  const selection = resolveDesignSelection();
+  const selectedTemplate = selection.selectedTemplate;
   const templateImage = await loadImage(pathToUrl(selectedTemplate.src));
-  const userImages = await Promise.all(state.uploadedImageUrls.map((url) => loadImage(url)));
-  const greeting = getSelectedGreeting();
+  const userImages = await Promise.all(state.uploadedImages.map((file) => loadUploadedImage(file)));
+  const greeting = selection.greeting;
   const sender = el.senderName.value.trim() || "From Your Family";
-  const layout = el.layoutSelect.value;
-  const animation = el.animationSelect.value;
-  const seedText = `${selectedTemplate.id}|${sender}|${greeting}|${layout}|${animation}`;
+  const layout = selection.layout;
+  const animation = selection.animation;
+  const timing = await resolveVideoTiming(selection.selectedAudioTrack);
+  const seedText = `${selectedTemplate.id}|${sender}|${greeting}|${layout}|${animation}|${selection.isRandomMode ? "random" : "custom"}`;
   const decorationSeed = createHashSeed(seedText);
   const textAnimationSeed = createHashSeed(`${seedText}|${Date.now()}|${Math.random()}`);
   const decorations = buildDecorations(decorationSeed, el.canvas.width, el.canvas.height);
@@ -1068,10 +1270,13 @@ async function buildRenderData() {
     sender,
     layout,
     animation,
+    selectedAudioTrack: selection.selectedAudioTrack,
+    isRandomMode: selection.isRandomMode,
+    sourceDurationMs: timing.sourceDurationMs,
     decorations,
     textAnimation,
-    clipDurationMs: exportConfig.clipDurationMs,
-    fadeOutStartMs: null,
+    clipDurationMs: timing.clipDurationMs,
+    fadeOutStartMs: timing.fadeOutStartMs,
     canvasWidth: el.canvas.width,
     canvasHeight: el.canvas.height
   };
@@ -1091,7 +1296,7 @@ async function animatePreview(renderData) {
     state.animationHandle = null;
   }
 
-  const durationMs = exportConfig.previewDurationMs;
+  const durationMs = Math.max(1000, renderData.clipDurationMs || exportConfig.previewDurationMs);
   const started = performance.now();
 
   return new Promise((resolve) => {
@@ -1210,16 +1415,30 @@ async function onGenerateClick() {
   try {
     setStatus("Rendering greeting...");
     const renderData = await buildRenderData();
-    prepareAudioPreview();
+    prepareAudioPreview(renderData.selectedAudioTrack);
 
     if (el.audioPreview.src) {
+      const shouldLoopPreviewAudio = Number.isFinite(renderData.sourceDurationMs)
+        && renderData.sourceDurationMs > 0
+        && renderData.clipDurationMs > renderData.sourceDurationMs + 120;
+      el.audioPreview.loop = shouldLoopPreviewAudio;
       el.audioPreview.currentTime = 0;
       el.audioPreview.play().catch(() => undefined);
     }
 
     await animatePreview(renderData);
+    if (el.audioPreview.src) {
+      el.audioPreview.pause();
+      el.audioPreview.currentTime = 0;
+      el.audioPreview.loop = false;
+    }
     enableDownloads(true);
-    setStatus("Ready. Download PNG or Video. Video uses selected song length (up to 20s).");
+    const seconds = Math.round(renderData.clipDurationMs / 1000);
+    if (renderData.isRandomMode) {
+      setStatus(`Ready. Random design generated (${seconds}s). Download PNG or Video.`);
+    } else {
+      setStatus(`Ready. Custom design generated (${seconds}s). Download PNG or Video.`);
+    }
     return true;
   } catch (error) {
     setStatus(error.message, true);
@@ -1290,7 +1509,7 @@ async function onDownloadVideoClick() {
       }
     }
 
-    const selectedTrack = getSelectedAudioTrack();
+    const selectedTrack = state.lastRenderData.selectedAudioTrack || getSelectedAudioTrack();
     let videoTiming = await resolveVideoTiming(selectedTrack);
     const videoTextAnimation = buildTextAnimation(createHashSeed(`video-text|${Date.now()}|${Math.random()}`));
 
@@ -1332,7 +1551,7 @@ async function onDownloadVideoClick() {
     };
 
     if (videoTiming.wasCapped) {
-      setStatus("Song is longer than 20s. Video will fade out and end at 20 seconds.");
+      setStatus(`Song is very long. Video duration is capped at ${Math.round(exportConfig.maxVideoDurationMs / 1000)} seconds.`);
     }
 
     const mixedStream = new MediaStream(tracks);
@@ -1360,12 +1579,17 @@ async function onDownloadVideoClick() {
     }
     recorder.start();
 
+    const durationMs = renderData.clipDurationMs;
+
     if (audioElement) {
+      const shouldLoopRecordedAudio = selectedTrack.src
+        && isValidDuration(audioElement.duration)
+        && durationMs > Math.round(audioElement.duration * 1000) + 120;
+      audioElement.loop = Boolean(shouldLoopRecordedAudio);
       audioElement.currentTime = 0;
       audioElement.play().catch(() => undefined);
     }
 
-    const durationMs = renderData.clipDurationMs;
     const started = performance.now();
 
     await new Promise((resolve) => {
@@ -1401,6 +1625,7 @@ async function onDownloadVideoClick() {
 
     if (audioElement) {
       audioElement.pause();
+      audioElement.loop = false;
       recordedAudio.setLevel(1);
     }
 
@@ -1412,7 +1637,7 @@ async function onDownloadVideoClick() {
     if (selectedTrack.src && !recordedAudio.hasAudioTrack) {
       setStatus(`${label} downloaded. Audio capture was unavailable in this browser.`);
     } else if (videoTiming.wasCapped) {
-      setStatus(`${label} downloaded. Video ended with fade at 20 seconds.`);
+      setStatus(`${label} downloaded. Duration capped at ${Math.round(exportConfig.maxVideoDurationMs / 1000)} seconds.`);
     } else {
       setStatus(`${label} downloaded.`);
     }
@@ -1422,6 +1647,7 @@ async function onDownloadVideoClick() {
     try {
       if (recordedAudio.audioElement) {
         recordedAudio.audioElement.pause();
+        recordedAudio.audioElement.loop = false;
         recordedAudio.setLevel(1);
       }
       recordedAudio.cleanup();
@@ -1466,14 +1692,27 @@ function bindEvents() {
       setStatus("Only the first 3 photos are used.");
     }
 
-    clearUploadedUrls();
-    state.uploadedImageUrls = files.map((file) => URL.createObjectURL(file));
-    updateUploadSummary(files);
+    const validFiles = files.filter((file) => isLikelyImageFile(file));
+    clearUploadedImages();
+    state.uploadedImages = validFiles;
+    updateUploadSummary(validFiles);
+
+    if (files.length && !validFiles.length) {
+      setStatus("No valid images found. Try JPG, PNG, WEBP, or AVIF.", true);
+    } else if (validFiles.length < files.length) {
+      setStatus("Some files were skipped because they are not recognized image formats.", true);
+    }
+
     enableDownloads(false);
   });
 
   el.modeInputs.forEach((input) => {
     input.addEventListener("change", toggleGreetingInputs);
+  });
+
+  el.customModeToggle.addEventListener("change", () => {
+    toggleDesignModeControls();
+    enableDownloads(false);
   });
 
   el.audioSelect.addEventListener("change", onAudioSelectionChange);
@@ -1488,7 +1727,7 @@ function bindEvents() {
   el.downloadVideoBtn.addEventListener("click", onDownloadVideoClick);
 
   window.addEventListener("beforeunload", () => {
-    clearUploadedUrls();
+    clearUploadedImages();
     clearCustomAudioTrack();
   });
 }
@@ -1517,10 +1756,11 @@ function init() {
   populateGreetingDropdown();
   populateAudioDropdown();
   bindEvents();
-  toggleGreetingInputs();
-  prepareAudioPreview();
+  el.customModeToggle.checked = false;
+  toggleDesignModeControls();
   drawInitialCanvas();
   enableDownloads(false);
 }
 
 init();
+

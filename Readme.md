@@ -7,6 +7,9 @@ A static frontend web app that creates personalized Eid greeting media using you
 - Mobile-responsive UI with modern Eid styling
 - Upload 1 to 3 personal photos
 - Add sender name (for example: `From Mufassir & Family`)
+- `Randomness ON` mode by default (only image + sender name needed)
+  - Auto-randomizes template, greeting wish, animation style, and background song each generation
+- Optional `Custom Design` mode via slider toggle to use manual controls
 - Pick from 3 built-in Eid background templates (from `Eid Photos`)
 - Greeting modes:
   - Random greeting
@@ -28,11 +31,12 @@ A static frontend web app that creates personalized Eid greeting media using you
   - PNG download
   - GIF button intentionally disabled in this offline-safe build
   - Video download in browser-supported format (`.webm` or `.mp4`)
-  - Video duration follows selected song duration, capped at 20 seconds with fade-out at the end when capped
+  - Preview/video duration follows `max(20 seconds, selected song length)`
 - Optional music selection (tracks from `Eid - songs`)
 - Built-in songs work directly without custom upload
 - Upload your own custom background audio file (`audio/*`)
 - `Surprise Me` button randomizes template, layout, animation, and greeting mode
+- Upload pipeline handles mixed personal-image dimensions more safely (large images are downscaled for reliable rendering)
 
 ## Project Structure
 
@@ -75,10 +79,7 @@ You can also open `index.html` directly, but a local server gives better compati
 
 ## Asset Notes
 
-- Background templates are currently mapped to:
-  - `Eid Photos/3.png`
-  - `Eid Photos/5.jpg`
-  - `Eid Photos/14.webp`
+- Background templates are mapped to all available files in `Eid Photos/` (`1` to `16`).
 - Audio dropdown includes selected sample tracks from `Eid - songs`.
 - You can swap assets by editing the arrays at the top of `script.js`:
   - `templates`

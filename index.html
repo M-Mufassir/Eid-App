@@ -33,56 +33,76 @@
         <input id="senderName" type="text" maxlength="80" placeholder="From Mufassir & Family" value="From Your Family" />
       </label>
 
-      <div class="field">
-        <span>Template</span>
-        <div id="templateGrid" class="template-grid" role="listbox" aria-label="Background templates"></div>
+      <div class="field mode-toggle">
+        <span>Design Mode</span>
+        <label class="switch-line" for="customModeToggle">
+          <span id="designModeLabel">Randomness ON (auto)</span>
+          <span class="switch">
+            <input id="customModeToggle" type="checkbox" aria-label="Enable custom design controls" />
+            <span class="slider" aria-hidden="true"></span>
+          </span>
+        </label>
+        <p id="designModeHint" class="mode-hint">
+          Custom is OFF by default. Upload image + name, and the app randomizes wish, animation, template, and song.
+        </p>
       </div>
 
-      <label class="field">
-        <span>Photo Layout</span>
-        <select id="layoutSelect">
-          <option value="classic">Classic Circle</option>
-          <option value="ribbon">Ribbon Strip</option>
-          <option value="collage">Collage Mix</option>
-        </select>
-      </label>
+      <details id="customControlsDropdown" class="custom-dropdown">
+        <summary>Custom Design Controls</summary>
+        <fieldset id="customControls" class="custom-controls">
 
-      <fieldset class="field mode-group">
-        <legend>Greeting Mode</legend>
-        <label><input type="radio" name="greetingMode" value="random" checked /> Random</label>
-        <label><input type="radio" name="greetingMode" value="default" /> Default</label>
-        <label><input type="radio" name="greetingMode" value="custom" /> Custom</label>
-      </fieldset>
+        <div class="field">
+          <span>Template</span>
+          <div id="templateGrid" class="template-grid" role="listbox" aria-label="Background templates"></div>
+        </div>
 
-      <label class="field">
-        <span>Default Greeting</span>
-        <select id="defaultGreeting" disabled></select>
-      </label>
+        <label class="field">
+          <span>Photo Layout</span>
+          <select id="layoutSelect">
+            <option value="classic">Classic Circle</option>
+            <option value="ribbon">Ribbon Strip</option>
+            <option value="collage">Collage Mix</option>
+          </select>
+        </label>
 
-      <label class="field">
-        <span>Custom Greeting</span>
-        <textarea id="customGreeting" rows="3" maxlength="220" placeholder="Write your own Eid wish here..." disabled></textarea>
-      </label>
+        <fieldset class="field mode-group">
+          <legend>Greeting Mode</legend>
+          <label><input type="radio" name="greetingMode" value="random" checked /> Random</label>
+          <label><input type="radio" name="greetingMode" value="default" /> Default</label>
+          <label><input type="radio" name="greetingMode" value="custom" /> Custom</label>
+        </fieldset>
 
-      <label class="field">
-        <span>Animation Style</span>
-        <select id="animationSelect">
-          <option value="fade">Fade In</option>
-          <option value="zoom">Zoom In</option>
-          <option value="slide">Slide Up</option>
-        </select>
-      </label>
+        <label class="field">
+          <span>Default Greeting</span>
+          <select id="defaultGreeting" disabled></select>
+        </label>
 
-      <label class="field">
-        <span>Background Audio (Optional)</span>
-        <select id="audioSelect"></select>
-      </label>
-      <label class="field">
-        <span>Upload Your Audio</span>
-        <input id="customAudioUpload" type="file" accept="audio/*" />
-      </label>
+        <label class="field">
+          <span>Custom Greeting</span>
+          <textarea id="customGreeting" rows="3" maxlength="220" placeholder="Write your own Eid wish here..." disabled></textarea>
+        </label>
 
-      <audio id="audioPreview" controls preload="none"></audio>
+        <label class="field">
+          <span>Animation Style</span>
+          <select id="animationSelect">
+            <option value="fade">Fade In</option>
+            <option value="zoom">Zoom In</option>
+            <option value="slide">Slide Up</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Background Audio (Optional)</span>
+          <select id="audioSelect"></select>
+        </label>
+        <label class="field">
+          <span>Upload Your Audio</span>
+          <input id="customAudioUpload" type="file" accept="audio/*" />
+        </label>
+
+        <audio id="audioPreview" controls preload="none"></audio>
+        </fieldset>
+      </details>
 
       <div class="button-row">
         <button id="surpriseBtn" class="btn secondary" type="button">Surprise Me</button>

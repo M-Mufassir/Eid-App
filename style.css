@@ -192,6 +192,122 @@ textarea:focus {
   color: var(--text-muted);
 }
 
+.mode-toggle {
+  border: 1px solid rgba(244, 217, 151, 0.28);
+  border-radius: 12px;
+  padding: 0.6rem 0.7rem;
+  background: rgba(2, 15, 33, 0.5);
+}
+
+.switch-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  color: var(--text-main);
+}
+
+.mode-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.switch {
+  position: relative;
+  width: 54px;
+  height: 30px;
+  flex: 0 0 auto;
+}
+
+.switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: rgba(109, 138, 171, 0.5);
+  border: 1px solid rgba(244, 217, 151, 0.35);
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f2e5c0;
+  box-shadow: 0 2px 7px rgba(1, 5, 12, 0.45);
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.switch input:checked + .slider {
+  background: rgba(220, 182, 103, 0.88);
+  border-color: rgba(244, 217, 151, 0.72);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(24px);
+  background: #122e50;
+}
+
+.custom-dropdown {
+  border: 1px solid rgba(244, 217, 151, 0.28);
+  border-radius: 12px;
+  background: rgba(2, 15, 33, 0.45);
+  padding: 0.45rem 0.6rem 0.55rem;
+}
+
+.custom-dropdown > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--gold-soft);
+  list-style: none;
+}
+
+.custom-dropdown > summary::-webkit-details-marker {
+  display: none;
+}
+
+.custom-dropdown > summary::after {
+  content: "v";
+  float: right;
+  transition: transform 160ms ease;
+}
+
+.custom-dropdown[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown[open] > summary {
+  margin-bottom: 0.65rem;
+}
+
+.custom-controls {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.72rem;
+  min-width: 0;
+}
+
+.custom-controls[disabled] {
+  opacity: 0.58;
+  filter: saturate(0.78);
+}
+
 .upload-list {
   min-height: 20px;
   font-size: 0.9rem;
