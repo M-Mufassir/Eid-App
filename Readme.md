@@ -32,7 +32,9 @@ A static frontend web app that creates personalized Eid greeting media using you
   - PNG download
   - GIF button intentionally disabled in this offline-safe build
   - Video download in browser-supported format (`.webm` or `.mp4`)
+  - Video export prepares a `Download Rendered Video` button below preview
   - Preview/video duration follows `max(20 seconds, selected song length)`
+  - Top-layer loading overlay includes a reactive circular countdown during video generation
 - Optional music selection (tracks from `Eid - songs`)
 - Built-in songs work directly without custom upload
 - Upload your own custom background audio file (`audio/*`)

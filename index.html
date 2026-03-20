@@ -1,139 +1,134 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eid Greeting Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Eid Video Studio | Modern Animation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Cinzel:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Cinzel:wght@500;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
 </head>
+
 <body>
-  <div class="ambient-bg" aria-hidden="true"></div>
+  <div class="ambient-bg"></div>
 
   <header class="topbar">
-    <h1>Eid Greeting Generator</h1>
-    <p>Create share-ready Eid cards with your own photos, greetings, and animation.</p>
+    <h1>🎬 Eid Video Studio</h1>
+    <p>One‑click video with modern animations & your memories</p>
   </header>
 
   <main class="app-layout">
-    <section class="panel controls-panel" aria-label="Controls">
-      <h2>Customize</h2>
+    <section class="panel controls-panel">
+      <h2>✨ Customize</h2>
 
       <label class="field">
-        <span>Upload Photos (1-3)</span>
-        <input id="photoUpload" type="file" accept=".jpg,.jpeg,.png,.webp,.avif,.gif,.bmp,.tif,.tiff,.heic,.heif,.svg,image/*" multiple />
+        <span>📸 Photos (1-3)</span>
+        <input id="photoUpload" type="file" accept="image/*" multiple />
       </label>
-      <div id="uploadList" class="upload-list" aria-live="polite"></div>
+      <div id="uploadList" class="upload-list">No photos selected.</div>
 
       <label class="field">
-        <span>Sender Name</span>
-        <input id="senderName" type="text" maxlength="80" placeholder="From Mufassir & Family" value="From Your Family" />
+        <span>✍️ Sender Name</span>
+        <input id="senderName" type="text" maxlength="80" placeholder="From Mufassir & Family"
+          value="From Your Family" />
       </label>
 
       <div class="field mode-toggle">
-        <span>Design Mode</span>
+        <span>🎲 Design Mode</span>
         <label class="switch-line" for="customModeToggle">
           <span id="designModeLabel">Randomness ON (auto)</span>
           <span class="switch">
-            <input id="customModeToggle" type="checkbox" aria-label="Enable custom design controls" />
-            <span class="slider" aria-hidden="true"></span>
+            <input id="customModeToggle" type="checkbox" />
+            <span class="slider"></span>
           </span>
         </label>
         <p id="designModeHint" class="mode-hint">
-          Custom is OFF by default. Upload image + name, and the app randomizes wish, animation, template, and song.
+          Random Mode: everything auto. Custom Mode: you choose template, song, greeting – animation stays random.
         </p>
       </div>
 
       <details id="customControlsDropdown" class="custom-dropdown">
-        <summary>Custom Design Controls</summary>
+        <summary>🎨 Custom Design Controls</summary>
         <fieldset id="customControls" class="custom-controls">
+          <div class="field">
+            <span>🖼️ Template</span>
+            <div id="templateGrid" class="template-grid"></div>
+          </div>
 
-        <div class="field">
-          <span>Template</span>
-          <div id="templateGrid" class="template-grid" role="listbox" aria-label="Background templates"></div>
-        </div>
+          <label class="field">
+            <span>📐 Photo Layout</span>
+            <select id="layoutSelect">
+              <option value="classic">Classic Circle</option>
+              <option value="ribbon">Ribbon Strip</option>
+              <option value="collage">Collage Mix</option>
+            </select>
+          </label>
 
-        <label class="field">
-          <span>Photo Layout</span>
-          <select id="layoutSelect">
-            <option value="classic">Classic Circle</option>
-            <option value="ribbon">Ribbon Strip</option>
-            <option value="collage">Collage Mix</option>
-          </select>
-        </label>
+          <fieldset class="field mode-group">
+            <legend>💬 Greeting Mode</legend>
+            <label><input type="radio" name="greetingMode" value="random" checked /> Random</label>
+            <label><input type="radio" name="greetingMode" value="default" /> Default</label>
+            <label><input type="radio" name="greetingMode" value="custom" /> Custom</label>
+          </fieldset>
 
-        <fieldset class="field mode-group">
-          <legend>Greeting Mode</legend>
-          <label><input type="radio" name="greetingMode" value="random" checked /> Random</label>
-          <label><input type="radio" name="greetingMode" value="default" /> Default</label>
-          <label><input type="radio" name="greetingMode" value="custom" /> Custom</label>
-        </fieldset>
+          <label class="field">
+            <span>📖 Default Greeting</span>
+            <select id="defaultGreeting" disabled></select>
+          </label>
 
-        <label class="field">
-          <span>Default Greeting</span>
-          <select id="defaultGreeting" disabled></select>
-        </label>
+          <label class="field">
+            <span>✏️ Custom Greeting</span>
+            <textarea id="customGreeting" rows="3" maxlength="220" placeholder="Write your own Eid wish..."
+              disabled></textarea>
+          </label>
 
-        <label class="field">
-          <span>Custom Greeting</span>
-          <textarea id="customGreeting" rows="3" maxlength="220" placeholder="Write your own Eid wish here..." disabled></textarea>
-        </label>
-
-        <label class="field">
-          <span>Animation Style</span>
-          <select id="animationSelect">
-            <option value="fade">Fade In</option>
-            <option value="zoom">Zoom In</option>
-            <option value="slide">Slide Up</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Background Audio (Optional)</span>
-          <select id="audioSelect"></select>
-        </label>
-        <label class="field">
-          <span>Upload Your Audio</span>
-          <input id="customAudioUpload" type="file" accept="audio/*" />
-        </label>
-
-        <audio id="audioPreview" controls preload="none"></audio>
+          <label class="field">
+            <span>🎵 Background Audio</span>
+            <select id="audioSelect"></select>
+          </label>
+          <label class="field">
+            <span>🔊 Upload Your Audio</span>
+            <input id="customAudioUpload" type="file" accept="audio/*" />
+          </label>
+          <audio id="audioPreview" controls preload="none"></audio>
         </fieldset>
       </details>
 
       <div class="button-row">
-        <button id="surpriseBtn" class="btn secondary" type="button">Surprise Me</button>
-        <button id="generateBtn" class="btn primary" type="button">Generate</button>
+        <button id="surpriseBtn" class="btn secondary">✨ Surprise Me</button>
+        <button id="createVideoBtn" class="btn primary">🎥 Create Video</button>
       </div>
 
       <div class="button-row">
-        <button id="downloadPngBtn" class="btn" type="button" disabled>Download PNG</button>
-        <button id="downloadGifBtn" class="btn" type="button" disabled title="GIF export disabled to keep this build fully local and mobile-compatible">GIF (Unavailable)</button>
+        <button id="downloadPngBtn" class="btn">📸 Save as PNG</button>
       </div>
 
-      <button id="downloadVideoBtn" class="btn" type="button" disabled>Download Video</button>
-
-      <p id="statusMsg" class="status">Ready. Upload photos and click Generate.</p>
+      <p id="statusMsg" class="status">Ready. Upload photos and click Create Video.</p>
     </section>
 
-    <section id="previewSection" class="panel preview-panel" aria-label="Preview">
-      <h2>Preview</h2>
+    <section id="previewSection" class="panel preview-panel">
+      <h2>🎬 Preview</h2>
       <div class="canvas-shell">
-        <canvas id="greetingCanvas" width="1080" height="1080" aria-label="Generated Eid greeting"></canvas>
+        <canvas id="greetingCanvas" width="1080" height="1080"></canvas>
       </div>
-      <p class="hint">1080 x 1080 output, ideal for WhatsApp and social posts.</p>
+      <p class="hint">1080x1080 • Video duration follows selected song (max 40s)</p>
       <p class="creator-tag">Created By Mufassir</p>
     </section>
   </main>
 
-  <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+  <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-card">
-      <span class="loading-spinner" aria-hidden="true"></span>
-      <p id="loadingText" class="loading-copy">Processing...</p>
+      <div class="countdown-circle" id="countdownCircle">
+        <span id="countdownNumber">0</span>
+      </div>
+      <p id="loadingText" class="loading-copy">Generating video...</p>
     </div>
   </div>
+
+  <script src="script.js" defer></script>
 </body>
+
 </html>

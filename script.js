@@ -1,66 +1,62 @@
+// ============================================================
+//  Eid Video Studio – Modern Animation Engine
+//  Uses local assets: Eid Photos/ & Eid - songs/
+//  Animations array with 8 dynamic styles
+// ============================================================
+
+// ---------- 1. Asset arrays (your local files) ----------
 const templates = [
-  { id: "template-1", label: "Template 1", src: "Eid Photos/1.webp" },
-  { id: "template-2", label: "Template 2", src: "Eid Photos/2.webp" },
-  { id: "template-3", label: "Template 3", src: "Eid Photos/3.png" },
-  { id: "template-4", label: "Template 4", src: "Eid Photos/4.avif" },
-  { id: "template-5", label: "Template 5", src: "Eid Photos/5.jpg" },
-  { id: "template-6", label: "Template 6", src: "Eid Photos/6.avif" },
-  { id: "template-7", label: "Template 7", src: "Eid Photos/7.avif" },
-  { id: "template-8", label: "Template 8", src: "Eid Photos/8.avif" },
-  { id: "template-9", label: "Template 9", src: "Eid Photos/9.png" },
-  { id: "template-10", label: "Template 10", src: "Eid Photos/10.avif" },
-  { id: "template-11", label: "Template 11", src: "Eid Photos/11.avif" },
-  { id: "template-12", label: "Template 12", src: "Eid Photos/12.jpg" },
-  { id: "template-13", label: "Template 13", src: "Eid Photos/13.avif" },
-  { id: "template-14", label: "Template 14", src: "Eid Photos/14.webp" },
-  { id: "template-15", label: "Template 15", src: "Eid Photos/15.jpg" },
-  { id: "template-16", label: "Template 16", src: "Eid Photos/16.jpg" }
+  { id: "t1", label: "Golden Mosque", src: "Eid Photos/1.webp" },
+  { id: "t2", label: "Starry Night", src: "Eid Photos/2.webp" },
+  { id: "t3", label: "Crescent Moon", src: "Eid Photos/3.png" },
+  { id: "t4", label: "Emerald Arch", src: "Eid Photos/4.avif" },
+  { id: "t5", label: "Lantern Light", src: "Eid Photos/5.jpg" },
+  { id: "t6", label: "Floral Eid", src: "Eid Photos/6.avif" },
+  { id: "t7", label: "Dome Glow", src: "Eid Photos/7.avif" },
+  { id: "t8", label: "Mosaic Art", src: "Eid Photos/8.avif" },
+  { id: "t9", label: "Silk Road", src: "Eid Photos/9.png" },
+  { id: "t10", label: "Desert Sunset", src: "Eid Photos/10.avif" },
+  { id: "t11", label: "Pearl Mosque", src: "Eid Photos/11.avif" },
+  { id: "t12", label: "Minaret", src: "Eid Photos/12.jpg" },
+  { id: "t13", label: "Garden of Peace", src: "Eid Photos/13.avif" },
+  { id: "t14", label: "Calligraphy", src: "Eid Photos/14.webp" },
+  { id: "t15", label: "Eid Gifts", src: "Eid Photos/15.jpg" },
+  { id: "t16", label: "Family Joy", src: "Eid Photos/16.jpg" }
 ];
 
 const audioTracks = [
-  { id: "none", label: "No background music", src: "" },
-  {
-    id: "track-1",
-    label: "Eid Song 1 (Built-in)",
-    src: "Eid - songs/Eid Mubarak 2025 _ Maher Zain _ Mesut Kurtis - Eid Saeed _ Islamic Nasheed(MP3_160K).mp3"
-  },
-  {
-    id: "track-2",
-    label: "Eid Song 2 (Built-in)",
-    src: "Eid - songs/Greetings Eid Mubarak song_ Harris j- Eid mubarak ft. Sujat Ali _ Iftekhar(MP3_160K).mp3"
-  },
-  {
-    id: "track-3",
-    label: "Eid Song 3 (Built-in)",
-    src: "Eid - songs/Eid Mubarak Status Video _ Eid Mubarak song by Harris J _ _eidmubarak _statusvideo _shorts(MP3_160K).mp3"
-  },
-  {
-    id: "track-4",
-    label: "Eid Song 4 (Built-in)",
-    src: "Eid - songs/Eid Mubarak status 2026_ Eid Al Fitr Status 2026 _Eid ul Fitr Status Video 2026_ Eid Whatsapp status(MP3_160K).mp3"
-  }
+  { id: "a1", label: "Eid Song 1", src: "Eid - songs/Eid Song 1.mp3" },
+  { id: "a2", label: "Eid Song 2", src: "Eid - songs/Eid Song 2.mp3" },
+  { id: "a3", label: "Eid Song 3", src: "Eid - songs/Eid Song 3.mp3" },
+  { id: "a4", label: "Eid Song 4", src: "Eid - songs/Eid Song 4.mp3" },
+  { id: "a5", label: "Eid Song 5", src: "Eid - songs/Eid Song 5.mp3" },
+  { id: "a6", label: "Eid Song 6", src: "Eid - songs/Eid Song 6.mp3" },
+  { id: "a7", label: "Eid Song 7", src: "Eid - songs/Eid Song 7.mp3" },
+  { id: "a8", label: "Eid Song 8", src: "Eid - songs/Eid Song 8.mp3" },
+  { id: "a9", label: "Eid Song 9", src: "Eid - songs/Eid Song 9.mp3" },
+  { id: "a10", label: "Eid Song 10", src: "Eid - songs/Eid Song 10.mp3" },
+  { id: "a11", label: "Eid Song 11", src: "Eid - songs/Eid Song 11.mp3" },
+  { id: "a12", label: "Eid Song 12", src: "Eid - songs/Eid Song 12.mp3" },
+  { id: "a13", label: "Eid Song 13", src: "Eid - songs/Eid Song 13.mp3" },
+  { id: "a14", label: "Eid Song 14", src: "Eid - songs/Eid Song 14.mp3" }
 ];
-
-const CUSTOM_AUDIO_ID = "custom-upload";
-const GIF_EXPORT_ENABLED = false;
-const CREATOR_SIGNATURE = "Created By Mufassir";
-const IMAGE_MAX_DIMENSION = 3000;
 
 const greetings = [
-  "Eid Mubarak. May this day bring peace, mercy, and blessings for your home.",
-  "Wishing you and your loved ones a joyful and spiritually uplifting Eid.",
-  "May Allah accept your prayers and fill your life with barakah this Eid.",
-  "Eid Mubarak to you and your family. Stay happy, healthy, and grateful.",
-  "Sending warm Eid wishes, heartfelt duas, and lots of sweet moments.",
-  "May your Eid be bright with kindness, faith, and togetherness.",
-  "Time for smiles, sweets, and family hugs. Eid Mubarak.",
-  "Eid vibes only: good food, good hearts, and endless gratitude.",
-  "From our family to yours, Eid Mubarak and many blessings.",
-  "May this Eid open new doors of hope, joy, and success for you.",
-  "Celebrate with faith, love, and generosity. Eid Mubarak.",
-  "May your home shine with happiness today and always. Eid Mubarak."
+  "Eid Mubarak! May your heart be as bright as the crescent moon.",
+  "Wishing you peace, joy, and the warmth of loved ones this Eid.",
+  "May Allah bless you with endless happiness and barakah.",
+  "Eid Mubarak to you and your family. Stay blessed!",
+  "Sending you warm Eid hugs and sweet memories.",
+  "May this Eid bring you closer to your dreams.",
+  "Celebrate with gratitude and love. Eid Mubarak!",
+  "May your home be filled with laughter and light.",
+  "Taqabbal Allahu minna wa minkum – Eid Mubarak!",
+  "Enjoy the sweetness of Eid with your loved ones.",
+  "A new day, a new hope. Eid Mubarak!",
+  "May the spirit of Eid illuminate your life."
 ];
 
+// ---------- 2. Layout definitions (unchanged) ----------
 const layoutSlots = {
   classic: {
     1: [{ x: 0.5, y: 0.38, size: 0.31, shape: "circle" }],
@@ -100,1223 +96,349 @@ const layoutSlots = {
   }
 };
 
-const state = {
-  selectedTemplateId: templates[0].id,
-  selectedAudioId: "track-1",
+// ---------- 3. Animation Definitions (Modern) ----------
+const animations = [
+  {
+    name: "Glide",
+    getMotion: (t) => ({
+      textX: Math.sin(t * 1.2) * 12,
+      textY: Math.cos(t * 0.9) * 8,
+      textScale: 1 + Math.sin(t * 1.5) * 0.02,
+      textRotate: Math.sin(t * 0.7) * 0.02,
+      photoY: Math.sin(t * 1.3) * 8,
+      photoScale: 1 + Math.sin(t * 1.1) * 0.01
+    })
+  },
+  {
+    name: "Pulse",
+    getMotion: (t) => ({
+      textX: 0,
+      textY: Math.sin(t * 2.2) * 6,
+      textScale: 1 + Math.sin(t * 2.8) * 0.04,
+      textRotate: 0,
+      photoY: Math.sin(t * 1.8) * 5,
+      photoScale: 1 + Math.sin(t * 2.4) * 0.02
+    })
+  },
+  {
+    name: "Ripple",
+    getMotion: (t) => ({
+      textX: Math.sin(t * 1.8) * 8,
+      textY: Math.sin(t * 1.4) * 8,
+      textScale: 1 + Math.sin(t * 2.0) * 0.03,
+      textRotate: Math.sin(t * 1.2) * 0.015,
+      photoY: Math.sin(t * 1.9) * 10,
+      photoScale: 1 + Math.sin(t * 1.7) * 0.015
+    })
+  },
+  {
+    name: "Aurora",
+    getMotion: (t) => ({
+      textX: Math.sin(t * 0.6) * 15,
+      textY: Math.cos(t * 0.5) * 12,
+      textScale: 1 + Math.sin(t * 0.9) * 0.02,
+      textRotate: Math.sin(t * 0.4) * 0.025,
+      photoY: Math.sin(t * 0.8) * 12,
+      photoScale: 1 + Math.sin(t * 0.7) * 0.018
+    })
+  },
+  {
+    name: "Orbit",
+    getMotion: (t) => ({
+      textX: Math.cos(t * 1.1) * 18,
+      textY: Math.sin(t * 1.1) * 12,
+      textScale: 1 + Math.sin(t * 1.4) * 0.025,
+      textRotate: Math.sin(t * 0.9) * 0.03,
+      photoY: Math.sin(t * 1.2) * 14,
+      photoScale: 1 + Math.sin(t * 1.0) * 0.02
+    })
+  },
+  {
+    name: "Cinematic",
+    getMotion: (t) => ({
+      textX: Math.sin(t * 0.5) * 6,
+      textY: Math.sin(t * 0.7) * 4,
+      textScale: 1,
+      textRotate: Math.sin(t * 0.3) * 0.008,
+      photoY: Math.sin(t * 0.6) * 5,
+      photoScale: 1 + Math.sin(t * 0.9) * 0.008
+    })
+  },
+  {
+    name: "Drift",
+    getMotion: (t) => ({
+      textX: Math.sin(t * 0.4) * 22,
+      textY: Math.cos(t * 0.35) * 18,
+      textScale: 1 + Math.sin(t * 0.5) * 0.015,
+      textRotate: Math.sin(t * 0.2) * 0.012,
+      photoY: Math.sin(t * 0.45) * 16,
+      photoScale: 1 + Math.sin(t * 0.55) * 0.01
+    })
+  },
+  {
+    name: "Burst",
+    getMotion: (t) => ({
+      textX: Math.sin(t * 1.6) * 10,
+      textY: Math.sin(t * 1.9) * 10,
+      textScale: 1 + Math.sin(t * 2.2) * 0.05,
+      textRotate: Math.sin(t * 1.7) * 0.025,
+      photoY: Math.sin(t * 2.0) * 12,
+      photoScale: 1 + Math.sin(t * 1.8) * 0.025
+    })
+  }
+];
+
+function getRandomAnimation() {
+  return animations[Math.floor(Math.random() * animations.length)];
+}
+
+// ---------- 4. Global state (initialized after DOM ready) ----------
+let state = {
+  selectedTemplateId: null,
   uploadedImages: [],
   customAudioTrack: null,
-  isAnimating: false,
-  animationHandle: null,
-  lastRenderData: null,
-  audioDurationCache: new Map()
+  isGenerating: false,
+  canvas: null,
+  ctx: null,
+  currentAnimation: null
 };
 
-const exportConfig = {
-  previewDurationMs: 20000,
-  clipDurationMs: 20000,
-  gifFps: 12,
-  defaultVideoDurationMs: 20000,
-  maxVideoDurationMs: 300000,
-  videoFadeDurationMs: 1800,
-  audioMetadataTimeoutMs: 7000
-};
+// DOM elements (populated after DOM ready)
+let el = {};
 
-const el = {
-  customModeToggle: document.getElementById("customModeToggle"),
-  designModeLabel: document.getElementById("designModeLabel"),
-  designModeHint: document.getElementById("designModeHint"),
-  customControlsDropdown: document.getElementById("customControlsDropdown"),
-  customControls: document.getElementById("customControls"),
-  templateGrid: document.getElementById("templateGrid"),
-  photoUpload: document.getElementById("photoUpload"),
-  uploadList: document.getElementById("uploadList"),
-  senderName: document.getElementById("senderName"),
-  defaultGreeting: document.getElementById("defaultGreeting"),
-  customGreeting: document.getElementById("customGreeting"),
-  modeInputs: document.querySelectorAll('input[name="greetingMode"]'),
-  layoutSelect: document.getElementById("layoutSelect"),
-  animationSelect: document.getElementById("animationSelect"),
-  audioSelect: document.getElementById("audioSelect"),
-  customAudioUpload: document.getElementById("customAudioUpload"),
-  audioPreview: document.getElementById("audioPreview"),
-  generateBtn: document.getElementById("generateBtn"),
-  surpriseBtn: document.getElementById("surpriseBtn"),
-  downloadPngBtn: document.getElementById("downloadPngBtn"),
-  downloadGifBtn: document.getElementById("downloadGifBtn"),
-  downloadVideoBtn: document.getElementById("downloadVideoBtn"),
-  statusMsg: document.getElementById("statusMsg"),
-  previewSection: document.getElementById("previewSection"),
-  loadingOverlay: document.getElementById("loadingOverlay"),
-  loadingText: document.getElementById("loadingText"),
-  canvas: document.getElementById("greetingCanvas")
-};
-
-const ctx = el.canvas.getContext("2d");
-
-function pathToUrl(path) {
-  return encodeURI(path).replace(/#/g, "%23");
-}
-
-function getMediaSrc(src) {
-  if (!src) {
-    return "";
-  }
-
-  if (/^(blob:|data:|https?:)/i.test(src)) {
-    return src;
-  }
-
-  return pathToUrl(src);
-}
-
-function setStatus(message, isError = false) {
-  el.statusMsg.textContent = message;
+// Helper functions
+function setStatus(msg, isError = false) {
+  if (!el.statusMsg) return;
+  el.statusMsg.textContent = msg;
   el.statusMsg.classList.toggle("error", isError);
 }
 
-function scrollToPreviewSection() {
-  el.previewSection?.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
-
-function setLoadingOverlay(visible, message = "Processing...") {
-  if (!el.loadingOverlay) {
-    return;
-  }
-
+function showLoading(visible, message = "Generating video...") {
+  if (!el.loadingOverlay) return;
   if (visible) {
     el.loadingOverlay.classList.add("active");
-    el.loadingOverlay.setAttribute("aria-hidden", "false");
-    if (el.loadingText) {
-      el.loadingText.textContent = message;
-    }
-    return;
+    el.loadingText.textContent = message;
+  } else {
+    el.loadingOverlay.classList.remove("active");
   }
-
-  el.loadingOverlay.classList.remove("active");
-  el.loadingOverlay.setAttribute("aria-hidden", "true");
 }
 
-function isCustomDesignEnabled() {
-  return Boolean(el.customModeToggle?.checked);
+function updateCountdown(seconds, total) {
+  if (!el.countdownNumber) return;
+  const remaining = Math.max(0, seconds);
+  const percent = 1 - (remaining / total);
+  const circle = document.querySelector(".countdown-circle");
+  if (circle) {
+    circle.style.background = `conic-gradient(#dcb667 ${percent * 360}deg, rgba(244, 217, 151, 0.2) ${percent * 360}deg)`;
+  }
+  el.countdownNumber.textContent = Math.ceil(remaining);
+}
+
+function randomFrom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function getSelectedMode() {
   return document.querySelector('input[name="greetingMode"]:checked')?.value || "random";
 }
 
-function randomFrom(list) {
-  return list[Math.floor(Math.random() * list.length)];
+function isCustomEnabled() {
+  return el.customModeToggle?.checked;
 }
 
-function createHashSeed(text) {
-  let hash = 2166136261;
-  for (let i = 0; i < text.length; i += 1) {
-    hash ^= text.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function createSeededRandom(seed) {
-  let current = seed || 1;
-  return () => {
-    current = (current * 1664525 + 1013904223) >>> 0;
-    return current / 4294967296;
-  };
-}
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function isValidDuration(durationSec) {
-  return Number.isFinite(durationSec) && durationSec > 0;
-}
-
-function buildTextAnimation(seed) {
-  const rand = createSeededRandom(seed);
-  const styles = ["float", "pulse", "wave", "drift", "cinematic"];
-  return {
-    style: styles[Math.floor(rand() * styles.length)],
-    speed: 0.7 + rand() * 1.6,
-    ampX: 6 + rand() * 18,
-    ampY: 5 + rand() * 16,
-    rotationAmp: 0.004 + rand() * 0.02,
-    scaleAmp: 0.01 + rand() * 0.045,
-    alphaAmp: 0.06 + rand() * 0.18,
-    glowAmp: 0.2 + rand() * 0.65,
-    greetingPhase: rand() * Math.PI * 2,
-    senderPhase: rand() * Math.PI * 2
-  };
-}
-
-function getTextMotionFrame(textAnimation, timeSec, role = "greeting") {
-  const phase = role === "sender" ? textAnimation.senderPhase : textAnimation.greetingPhase;
-  const t = timeSec * textAnimation.speed + phase;
-
-  const result = {
-    x: 0,
-    y: 0,
-    scale: 1,
-    rotation: 0,
-    alpha: 1,
-    glow: 0.45
-  };
-
-  switch (textAnimation.style) {
-    case "float":
-      result.x = Math.sin(t * 0.95) * textAnimation.ampX;
-      result.y = Math.cos(t * 1.15) * textAnimation.ampY;
-      result.rotation = Math.sin(t * 0.8) * textAnimation.rotationAmp;
-      break;
-    case "pulse":
-      result.scale = 1 + Math.sin(t * 1.6) * textAnimation.scaleAmp;
-      result.alpha = 0.92 + Math.sin(t * 1.2) * textAnimation.alphaAmp;
-      result.y = Math.sin(t * 0.7) * textAnimation.ampY * 0.35;
-      break;
-    case "wave":
-      result.x = Math.sin(t * 1.7) * textAnimation.ampX * 0.62;
-      result.y = Math.sin(t * 2.2) * textAnimation.ampY * 0.72;
-      result.rotation = Math.sin(t * 1.1) * textAnimation.rotationAmp * 1.3;
-      break;
-    case "drift":
-      result.x = Math.sin(t * 0.55) * textAnimation.ampX * 1.2;
-      result.y = Math.cos(t * 0.45) * textAnimation.ampY * 0.8;
-      result.scale = 1 + Math.sin(t * 0.5) * textAnimation.scaleAmp * 0.8;
-      break;
-    case "cinematic":
-      result.x = Math.sin(t * 0.9) * textAnimation.ampX * 0.45;
-      result.y = Math.cos(t * 1.05) * textAnimation.ampY * 0.5;
-      result.scale = 1 + Math.sin(t * 1.3) * textAnimation.scaleAmp;
-      result.rotation = Math.sin(t * 0.65) * textAnimation.rotationAmp * 0.7;
-      result.alpha = 0.92 + Math.sin(t * 1.4) * textAnimation.alphaAmp * 0.85;
-      break;
-    default:
-      break;
-  }
-
-  result.alpha = clamp(result.alpha, 0.68, 1);
-  result.glow = clamp(0.35 + (Math.sin(t * 1.4) + 1) * 0.5 * textAnimation.glowAmp, 0.2, 1);
-  return result;
-}
-
-async function resolveAudioDurationMs(src) {
-  if (!src) {
-    return null;
-  }
-
-  if (state.audioDurationCache.has(src)) {
-    return state.audioDurationCache.get(src);
-  }
-
-  const durationMs = await new Promise((resolve) => {
-    const audio = new Audio();
-    let timeoutId;
-
-    const cleanup = () => {
-      clearTimeout(timeoutId);
-      audio.removeEventListener("loadedmetadata", onLoaded);
-      audio.removeEventListener("error", onError);
-    };
-
-    const onLoaded = () => {
-      cleanup();
-      if (isValidDuration(audio.duration)) {
-        resolve(Math.round(audio.duration * 1000));
-        return;
-      }
-      resolve(null);
-    };
-
-    const onError = () => {
-      cleanup();
-      resolve(null);
-    };
-
-    timeoutId = setTimeout(() => {
-      cleanup();
-      resolve(null);
-    }, exportConfig.audioMetadataTimeoutMs);
-
-    audio.preload = "metadata";
-    audio.addEventListener("loadedmetadata", onLoaded);
-    audio.addEventListener("error", onError);
-    audio.src = pathToUrl(src);
-  });
-
-  state.audioDurationCache.set(src, durationMs);
-  return durationMs;
-}
-
-function buildVideoTimingFromDurationMs(durationMs) {
-  const targetDurationMs = Math.max(
-    Math.round(durationMs),
-    exportConfig.defaultVideoDurationMs
-  );
-  const boundedDurationMs = clamp(targetDurationMs, 1000, exportConfig.maxVideoDurationMs);
-  const wasCapped = targetDurationMs > exportConfig.maxVideoDurationMs;
-  return {
-    clipDurationMs: boundedDurationMs,
-    fadeOutStartMs: null,
-    wasCapped
-  };
-}
-
-async function resolveVideoTiming(selectedTrack) {
-  const fallback = {
-    clipDurationMs: exportConfig.defaultVideoDurationMs,
-    sourceDurationMs: null,
-    fadeOutStartMs: null,
-    wasCapped: false
-  };
-
-  if (!selectedTrack?.src) {
-    return fallback;
-  }
-
-  const sourceDurationMs = await resolveAudioDurationMs(selectedTrack.src);
-  if (!sourceDurationMs) {
-    return fallback;
-  }
-
-  const timing = buildVideoTimingFromDurationMs(sourceDurationMs);
-  return {
-    clipDurationMs: timing.clipDurationMs,
-    sourceDurationMs,
-    fadeOutStartMs: timing.fadeOutStartMs,
-    wasCapped: timing.wasCapped
-  };
-}
-
-function getAnimationFrameState(animation, introEased, timeSec) {
-  const breathe = Math.sin(timeSec * 1.15);
-  const drift = Math.sin(timeSec * 0.72);
-  const pulse = Math.sin(timeSec * 1.9);
-
-  const state = {
-    bgScale: 1,
-    bgOffsetX: drift * 10,
-    bgOffsetY: Math.cos(timeSec * 0.9) * 8,
-    photoScale: 1 + pulse * 0.012,
-    photoOffsetY: breathe * 6,
-    textAlpha: introEased
-  };
-
-  if (animation === "zoom") {
-    const loopScale = 1.015 + Math.sin(timeSec * 0.55) * 0.03;
-    state.bgScale = (1.12 - introEased * 0.1) * loopScale;
-    state.photoScale += Math.sin(timeSec * 1.25) * 0.02;
-  } else if (animation === "slide") {
-    state.bgOffsetY += (1 - introEased) * 70;
-    state.photoOffsetY += (1 - introEased) * 80 + Math.sin(timeSec * 1.6) * 10;
-    state.bgOffsetX += Math.sin(timeSec * 1.05) * 16;
-  } else {
-    // Fade style stays alive throughout the full clip, not only intro.
-    state.textAlpha = clamp(introEased * (0.84 + (Math.sin(timeSec * 1.45) + 1) * 0.08), 0.45, 1);
-    state.bgScale = 1.01 + Math.sin(timeSec * 0.68) * 0.012;
-  }
-
-  return state;
-}
-
-async function waitForMediaReady(mediaElement, timeoutMs = 7000) {
-  if (mediaElement.readyState >= 2) {
-    return;
-  }
-
-  await new Promise((resolve, reject) => {
-    let timeoutId;
-
-    const cleanup = () => {
-      clearTimeout(timeoutId);
-      mediaElement.removeEventListener("canplay", onReady);
-      mediaElement.removeEventListener("error", onError);
-    };
-
-    const onReady = () => {
-      cleanup();
-      resolve();
-    };
-
-    const onError = () => {
-      cleanup();
-      reject(new Error("Unable to load selected audio track for video export."));
-    };
-
-    timeoutId = setTimeout(() => {
-      cleanup();
-      reject(new Error("Audio loading timed out. Try another track or check your connection."));
-    }, timeoutMs);
-
-    mediaElement.addEventListener("canplay", onReady);
-    mediaElement.addEventListener("error", onError);
-    mediaElement.load();
-  });
-}
-
-async function prepareAudioForRecording(selectedTrack) {
-  if (!selectedTrack?.src) {
-    return {
-      audioElement: null,
-      audioTracks: [],
-      hasAudioTrack: false,
-      setLevel: () => undefined,
-      cleanup: () => undefined
-    };
-  }
-
-  const audioElement = new Audio(getMediaSrc(selectedTrack.src));
-  audioElement.preload = "auto";
-  await waitForMediaReady(audioElement, exportConfig.audioMetadataTimeoutMs);
-
-  const AudioContextRef = window.AudioContext || window.webkitAudioContext;
-  if (AudioContextRef) {
-    try {
-      const audioContext = new AudioContextRef();
-      await audioContext.resume();
-
-      const sourceNode = audioContext.createMediaElementSource(audioElement);
-      const gainNode = audioContext.createGain();
-      const destinationNode = audioContext.createMediaStreamDestination();
-
-      sourceNode.connect(gainNode);
-      gainNode.connect(destinationNode);
-
-      const audioTracks = destinationNode.stream.getAudioTracks();
-      return {
-        audioElement,
-        audioTracks,
-        hasAudioTrack: audioTracks.length > 0,
-        setLevel: (value) => {
-          gainNode.gain.value = clamp(value, 0, 1);
-        },
-        cleanup: () => {
-          sourceNode.disconnect();
-          gainNode.disconnect();
-          destinationNode.disconnect();
-          audioContext.close();
-        }
-      };
-    } catch (_error) {
-      // Fallback to captureStream below.
-    }
-  }
-
-  if (typeof audioElement.captureStream === "function") {
-    const audioStream = audioElement.captureStream();
-    const audioTracks = audioStream.getAudioTracks();
-    return {
-      audioElement,
-      audioTracks,
-      hasAudioTrack: audioTracks.length > 0,
-      setLevel: (value) => {
-        audioElement.volume = clamp(value, 0, 1);
-      },
-      cleanup: () => undefined
-    };
-  }
-
-  return {
-    audioElement,
-    audioTracks: [],
-    hasAudioTrack: false,
-    setLevel: () => undefined,
-    cleanup: () => undefined
-  };
-}
-
-function getSelectedGreeting() {
-  const mode = getSelectedMode();
-
-  if (mode === "default") {
-    return el.defaultGreeting.value || greetings[0];
-  }
-
-  if (mode === "custom") {
-    const custom = el.customGreeting.value.trim();
-    return custom || greetings[0];
-  }
-
-  return randomFrom(greetings);
-}
-
-function getSelectedTemplate() {
-  return templates.find((item) => item.id === state.selectedTemplateId) || templates[0];
-}
-
-function getSelectedAudioTrack() {
-  const selectedId = el.audioSelect.value || state.selectedAudioId;
-  if (selectedId === CUSTOM_AUDIO_ID && state.customAudioTrack) {
-    return state.customAudioTrack;
-  }
-  return audioTracks.find((item) => item.id === selectedId) || audioTracks[0];
-}
-
-function getRandomAudioTrack() {
-  const candidates = audioTracks.filter((track) => track.src);
-  if (!candidates.length) {
-    return getSelectedAudioTrack();
-  }
-  return randomFrom(candidates);
-}
-
-function getSelectOptionValues(selectElement) {
-  return Array.from(selectElement.options)
-    .map((option) => option.value)
-    .filter(Boolean);
-}
-
-function getRandomDesignSelection() {
-  const layoutOptions = getSelectOptionValues(el.layoutSelect);
-  const animationOptions = getSelectOptionValues(el.animationSelect);
-
-  return {
-    selectedTemplate: randomFrom(templates),
-    layout: randomFrom(layoutOptions.length ? layoutOptions : ["classic"]),
-    animation: randomFrom(animationOptions.length ? animationOptions : ["fade"]),
-    greeting: randomFrom(greetings),
-    selectedAudioTrack: getRandomAudioTrack(),
-    isRandomMode: true
-  };
-}
-
-function getCustomDesignSelection() {
-  return {
-    selectedTemplate: getSelectedTemplate(),
-    layout: el.layoutSelect.value,
-    animation: el.animationSelect.value,
-    greeting: getSelectedGreeting(),
-    selectedAudioTrack: getSelectedAudioTrack(),
-    isRandomMode: false
-  };
-}
-
-function resolveDesignSelection() {
-  const useCustom = isCustomDesignEnabled();
-  const selection = useCustom ? getCustomDesignSelection() : getRandomDesignSelection();
-
-  state.selectedTemplateId = selection.selectedTemplate.id;
-  markSelectedTemplate();
-  el.layoutSelect.value = selection.layout;
-  el.animationSelect.value = selection.animation;
-
-  if (selection.selectedAudioTrack?.id) {
-    const hasAudioOption = Array.from(el.audioSelect.options).some((option) => option.value === selection.selectedAudioTrack.id);
-    if (hasAudioOption) {
-      el.audioSelect.value = selection.selectedAudioTrack.id;
-    }
-    state.selectedAudioId = selection.selectedAudioTrack.id;
-  }
-
-  return selection;
-}
-
-function toTitleFileNames(fileList) {
-  const names = fileList.map((file) => file.name);
-  return names.join(" | ");
-}
-
-function clearUploadedImages() {
-  state.uploadedImages = [];
-}
-
-function clearCustomAudioTrack() {
-  if (state.customAudioTrack?.src) {
-    state.audioDurationCache.delete(state.customAudioTrack.src);
-    URL.revokeObjectURL(state.customAudioTrack.src);
-  }
-  if (state.selectedAudioId === CUSTOM_AUDIO_ID) {
-    state.selectedAudioId = "track-1";
-  }
-  state.customAudioTrack = null;
-}
-
-function updateUploadSummary(files) {
-  if (!files.length) {
-    el.uploadList.textContent = "No photos selected.";
-    return;
-  }
-  el.uploadList.textContent = `${files.length} selected: ${toTitleFileNames(files)}`;
-}
-
-function loadImage(source) {
+// ---------- 5. Image & audio loading ----------
+function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.decoding = "async";
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error(`Failed to load image: ${source}`));
-    img.src = source;
+    img.onerror = () => reject(new Error(`Failed to load: ${src}`));
+    img.src = src;
   });
 }
 
-function getRenderableDimensions(image) {
-  const width = image.naturalWidth || image.width || 0;
-  const height = image.naturalHeight || image.height || 0;
-  return { width, height };
+async function loadUserImages(files) {
+  const images = [];
+  for (const file of files) {
+    const img = new Image();
+    await new Promise((resolve) => {
+      img.onload = resolve;
+      img.src = URL.createObjectURL(file);
+    });
+    images.push(img);
+  }
+  return images;
 }
 
-function normalizeImageForCanvas(image, maxDimension = IMAGE_MAX_DIMENSION) {
-  const { width, height } = getRenderableDimensions(image);
-  if (!width || !height) {
-    throw new Error("Unsupported image dimensions.");
-  }
-
-  const maxSide = Math.max(width, height);
-  if (maxSide <= maxDimension) {
-    return image;
-  }
-
-  const scale = maxDimension / maxSide;
-  const targetWidth = Math.max(1, Math.round(width * scale));
-  const targetHeight = Math.max(1, Math.round(height * scale));
-  const canvas = document.createElement("canvas");
-  canvas.width = targetWidth;
-  canvas.height = targetHeight;
-  const canvasCtx = canvas.getContext("2d");
-  if (!canvasCtx) {
-    throw new Error("Unable to prepare uploaded image for rendering.");
-  }
-  canvasCtx.imageSmoothingEnabled = true;
-  canvasCtx.imageSmoothingQuality = "high";
-  canvasCtx.drawImage(image, 0, 0, targetWidth, targetHeight);
-
-  if (typeof image.close === "function") {
-    image.close();
-  }
-
-  return canvas;
+async function getAudioDuration(src) {
+  return new Promise((resolve) => {
+    const audio = new Audio();
+    audio.onloadedmetadata = () => {
+      resolve(audio.duration ? Math.min(40000, audio.duration * 1000) : 20000);
+    };
+    audio.onerror = () => resolve(20000);
+    audio.src = src;
+  });
 }
 
-async function decodeImageFromFile(file) {
-  if (typeof createImageBitmap === "function") {
-    try {
-      return await createImageBitmap(file, { imageOrientation: "from-image" });
-    } catch (_orientationDecodeError) {
-      try {
-        return await createImageBitmap(file);
-      } catch (_decodeError) {
-        // Fall back to <img> decoding below.
-      }
-    }
-  }
-
-  const objectUrl = URL.createObjectURL(file);
-  try {
-    return await loadImage(objectUrl);
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
+// ---------- 6. Drawing with modern animation ----------
+function drawRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
 }
 
-async function loadUploadedImage(file) {
-  try {
-    const decoded = await decodeImageFromFile(file);
-    return normalizeImageForCanvas(decoded);
-  } catch (_error) {
-    throw new Error(`Unable to read "${file.name}". Try JPG, JPEG, PNG, WEBP, AVIF, or other image formats.`);
-  }
-}
-
-function fitCover(ctxArg, image, x, y, width, height) {
-  const scale = Math.max(width / image.width, height / image.height);
-  const drawWidth = image.width * scale;
-  const drawHeight = image.height * scale;
-  const dx = x + (width - drawWidth) / 2;
-  const dy = y + (height - drawHeight) / 2;
-  ctxArg.drawImage(image, dx, dy, drawWidth, drawHeight);
-}
-
-function drawFramedPhoto(ctxArg, img, x, y, size, shape, alpha = 1) {
-  const framePad = 12;
-  const frameRadius = shape === "circle" ? (size + framePad * 2) / 2 : 34;
-
-  ctxArg.save();
-  ctxArg.globalAlpha = alpha;
-
-  if (shape === "circle") {
-    ctxArg.beginPath();
-    ctxArg.arc(x + size / 2, y + size / 2, size / 2 + framePad, 0, Math.PI * 2);
-    ctxArg.fillStyle = "rgba(241, 210, 136, 0.85)";
-    ctxArg.fill();
-  } else {
-    drawRoundRect(ctxArg, x - framePad, y - framePad, size + framePad * 2, size + framePad * 2, frameRadius);
-    ctxArg.fillStyle = "rgba(241, 210, 136, 0.86)";
-    ctxArg.fill();
-  }
-
-  if (shape === "circle") {
-    ctxArg.beginPath();
-    ctxArg.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
-    ctxArg.clip();
-  } else {
-    drawRoundRect(ctxArg, x, y, size, size, 26);
-    ctxArg.clip();
-  }
-
-  fitCover(ctxArg, img, x, y, size, size);
-  ctxArg.restore();
-}
-
-function drawRoundRect(ctxArg, x, y, width, height, radius) {
-  const r = Math.min(radius, width / 2, height / 2);
-  ctxArg.beginPath();
-  ctxArg.moveTo(x + r, y);
-  ctxArg.arcTo(x + width, y, x + width, y + height, r);
-  ctxArg.arcTo(x + width, y + height, x, y + height, r);
-  ctxArg.arcTo(x, y + height, x, y, r);
-  ctxArg.arcTo(x, y, x + width, y, r);
-  ctxArg.closePath();
-}
-
-function wrapText(ctxArg, text, x, y, maxWidth, lineHeight) {
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.split(" ");
   let line = "";
   let currentY = y;
-
-  words.forEach((word, index) => {
-    const test = `${line}${word} `;
-    const width = ctxArg.measureText(test).width;
-    if (width > maxWidth && index > 0) {
-      ctxArg.fillText(line.trim(), x, currentY);
-      line = `${word} `;
+  for (let i = 0; i < words.length; i++) {
+    const test = line + words[i] + " ";
+    if (ctx.measureText(test).width > maxWidth && i > 0) {
+      ctx.fillText(line.trim(), x, currentY);
+      line = words[i] + " ";
       currentY += lineHeight;
-      return;
+    } else {
+      line = test;
     }
-    line = test;
-  });
-
-  ctxArg.fillText(line.trim(), x, currentY);
+  }
+  ctx.fillText(line.trim(), x, currentY);
   return currentY;
 }
 
-function buildDecorations(seed, width, height) {
-  const rand = createSeededRandom(seed);
-  const ribbonColors = ["#dcb667", "#f2dea8", "#98b7dd", "#9ed8c2", "#b49ee2"];
+function drawGreetingCard(ctx, renderData, progress, animation) {
+  const w = renderData.canvasWidth;
+  const h = renderData.canvasHeight;
+  ctx.clearRect(0, 0, w, h);
+  ctx.drawImage(renderData.templateImage, 0, 0, w, h);
+  ctx.fillStyle = "rgba(0,0,0,0.35)";
+  ctx.fillRect(0, 0, w, h);
 
-  const ribbons = Array.from({ length: 8 }, () => ({
-    baseX: width * (0.08 + rand() * 0.84),
-    width: 2 + rand() * 4,
-    amplitude: 10 + rand() * 28,
-    speed: 1.2 + rand() * 1.8,
-    phase: rand() * Math.PI * 2,
-    lengthScale: 0.66 + rand() * 0.24,
-    color: ribbonColors[Math.floor(rand() * ribbonColors.length)]
-  }));
+  // Decorative particles (subtle)
+  ctx.fillStyle = "rgba(244, 217, 151, 0.2)";
+  for (let i = 0; i < 80; i++) {
+    ctx.beginPath();
+    ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 6 + 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-  const particles = Array.from({ length: 95 }, () => ({
-    baseX: rand() * width,
-    baseY: rand() * height,
-    radius: 1.1 + rand() * 3.6,
-    speed: 0.08 + rand() * 0.26,
-    drift: 4 + rand() * 36,
-    phase: rand() * Math.PI * 2,
-    swing: 0.9 + rand() * 2.2,
-    twinkle: 1.3 + rand() * 3.4,
-    alpha: 0.25 + rand() * 0.55
-  }));
+  // Get animation motion values at current time
+  const t = progress * Math.PI * 2; // full cycle
+  const motion = animation.getMotion(t);
+  const photoYoffset = motion.photoY;
+  const photoScale = motion.photoScale;
 
-  const sparkles = Array.from({ length: 28 }, () => ({
-    x: width * (0.04 + rand() * 0.92),
-    y: height * (0.05 + rand() * 0.9),
-    size: 2 + rand() * 4.8,
-    pulseSpeed: 2 + rand() * 4,
-    phase: rand() * Math.PI * 2
-  }));
-
-  return { ribbons, particles, sparkles };
-}
-
-function drawRibbonLayer(ctxArg, ribbons, timeSec, alpha, height) {
-  ctxArg.save();
-  ribbons.forEach((ribbon, index) => {
-    const maxY = height * ribbon.lengthScale;
-    const strokeAlpha = alpha * (0.44 + ((index % 3) * 0.1));
-    ctxArg.globalAlpha = strokeAlpha;
-    ctxArg.strokeStyle = ribbon.color;
-    ctxArg.lineWidth = ribbon.width;
-    ctxArg.beginPath();
-
-    for (let y = -35, first = true; y <= maxY; y += 20) {
-      const wave = Math.sin(timeSec * ribbon.speed + ribbon.phase + y * 0.02) * ribbon.amplitude;
-      const x = ribbon.baseX + wave;
-      if (first) {
-        ctxArg.moveTo(x, y);
-        first = false;
-      } else {
-        ctxArg.lineTo(x, y);
-      }
+  const slots = layoutSlots[renderData.layout]?.[Math.min(3, renderData.userImages.length)] || layoutSlots.classic[1];
+  slots.forEach((slot, idx) => {
+    const img = renderData.userImages[idx];
+    if (!img) return;
+    const size = slot.size * w * photoScale;
+    const x = slot.x * w - size / 2;
+    const y = slot.y * h - size / 2 + photoYoffset;
+    ctx.save();
+    if (slot.shape === "circle") {
+      ctx.beginPath();
+      ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+      ctx.clip();
+    } else {
+      drawRoundRect(ctx, x, y, size, size, 26);
+      ctx.clip();
     }
-    ctxArg.stroke();
-
-    ctxArg.globalAlpha = strokeAlpha * 0.45;
-    ctxArg.strokeStyle = "#fff8d8";
-    ctxArg.lineWidth = Math.max(1, ribbon.width * 0.38);
-    ctxArg.stroke();
-  });
-  ctxArg.restore();
-}
-
-function drawParticleLayer(ctxArg, particles, timeSec, alpha, width, height) {
-  ctxArg.save();
-  ctxArg.globalCompositeOperation = "screen";
-
-  particles.forEach((particle) => {
-    const travel = (particle.baseY / height + timeSec * particle.speed) % 1;
-    const y = height + 50 - travel * (height + 120);
-    const x = particle.baseX + Math.sin(timeSec * particle.swing + particle.phase) * particle.drift;
-    const twinkle = 0.45 + 0.55 * Math.sin(timeSec * particle.twinkle + particle.phase);
-
-    if (x < -30 || x > width + 30) {
-      return;
+    ctx.drawImage(img, x, y, size, size);
+    ctx.restore();
+    ctx.beginPath();
+    ctx.strokeStyle = "#f4d58c";
+    ctx.lineWidth = 8;
+    if (slot.shape === "circle") {
+      ctx.arc(x + size / 2, y + size / 2, size / 2 + 4, 0, Math.PI * 2);
+    } else {
+      drawRoundRect(ctx, x - 4, y - 4, size + 8, size + 8, 30);
     }
-
-    ctxArg.globalAlpha = alpha * particle.alpha * twinkle;
-    ctxArg.fillStyle = "rgba(247, 233, 182, 0.95)";
-    ctxArg.beginPath();
-    ctxArg.arc(x, y, particle.radius, 0, Math.PI * 2);
-    ctxArg.fill();
+    ctx.stroke();
   });
 
-  ctxArg.restore();
+  // Text animation
+  const greetingY_base = 700;
+  const senderY_base = greetingY_base + 110;
+  ctx.font = "700 62px Cairo";
+  ctx.fillStyle = "#fbf5e6";
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = "#b97f2e";
+  ctx.textAlign = "center";
+
+  const textX = motion.textX;
+  const textY = motion.textY;
+  const textScale = motion.textScale;
+  const textRotate = motion.textRotate;
+
+  ctx.save();
+  ctx.translate(w / 2 + textX, greetingY_base + textY);
+  ctx.rotate(textRotate);
+  ctx.scale(textScale, textScale);
+  wrapText(ctx, renderData.greeting, 0, 0, 860, 68);
+  ctx.restore();
+
+  ctx.font = "600 44px Cinzel";
+  ctx.fillStyle = "#e6c48b";
+  ctx.save();
+  ctx.translate(w / 2 + textX * 0.6, senderY_base + textY * 0.7);
+  ctx.rotate(textRotate * 0.7);
+  ctx.scale(textScale * 0.98, textScale * 0.98);
+  ctx.fillText(renderData.sender, 0, 0);
+  ctx.restore();
+
+  ctx.font = "24px Cairo";
+  ctx.fillStyle = "#ffecb3";
+  ctx.fillText(CREATOR_SIGNATURE, w - 40, h - 28);
+  ctx.shadowBlur = 0;
 }
 
-function drawSparkle(ctxArg, x, y, size, alpha) {
-  ctxArg.save();
-  ctxArg.translate(x, y);
-  ctxArg.globalAlpha = alpha;
-  ctxArg.strokeStyle = "rgba(245, 223, 170, 0.95)";
-  ctxArg.lineWidth = 1.25;
+const CREATOR_SIGNATURE = "Created By Mufassir";
+const MAX_VIDEO_DURATION_MS = 40000;
 
-  ctxArg.beginPath();
-  ctxArg.moveTo(-size, 0);
-  ctxArg.lineTo(size, 0);
-  ctxArg.moveTo(0, -size);
-  ctxArg.lineTo(0, size);
-  ctxArg.stroke();
-
-  ctxArg.rotate(Math.PI / 4);
-  ctxArg.beginPath();
-  ctxArg.moveTo(-size * 0.68, 0);
-  ctxArg.lineTo(size * 0.68, 0);
-  ctxArg.moveTo(0, -size * 0.68);
-  ctxArg.lineTo(0, size * 0.68);
-  ctxArg.stroke();
-  ctxArg.restore();
-}
-
-function drawSparkleLayer(ctxArg, sparkles, timeSec, alpha) {
-  sparkles.forEach((spark) => {
-    const pulse = (Math.sin(timeSec * spark.pulseSpeed + spark.phase) + 1) / 2;
-    if (pulse < 0.45) {
-      return;
-    }
-
-    drawSparkle(ctxArg, spark.x, spark.y, spark.size * pulse, alpha * pulse * 0.8);
-  });
-}
-
-function drawPatternDetails(ctxArg, progress, timeSec = 0) {
-  const glow = 0.25 + progress * 0.75;
-
-  ctxArg.save();
-  ctxArg.globalAlpha = glow;
-
-  ctxArg.fillStyle = "rgba(245, 223, 170, 0.88)";
-  ctxArg.beginPath();
-  ctxArg.arc(860, 150, 64, 0, Math.PI * 2);
-  ctxArg.fill();
-
-  ctxArg.globalCompositeOperation = "destination-out";
-  ctxArg.beginPath();
-  ctxArg.arc(888, 150, 56, 0, Math.PI * 2);
-  ctxArg.fill();
-
-  ctxArg.globalCompositeOperation = "source-over";
-  ctxArg.strokeStyle = "rgba(245, 223, 170, 0.7)";
-  ctxArg.lineWidth = 4;
-  ctxArg.beginPath();
-  const lanternSwing = Math.sin(timeSec * 1.5) * 8;
-  ctxArg.moveTo(178, 62);
-  ctxArg.lineTo(178 + lanternSwing * 0.2, 170);
-  ctxArg.stroke();
-
-  ctxArg.beginPath();
-  ctxArg.arc(178 + lanternSwing, 196, 26, 0, Math.PI * 2);
-  ctxArg.stroke();
-
-  ctxArg.strokeStyle = "rgba(245, 223, 170, 0.48)";
-  ctxArg.lineWidth = 2;
-  for (let i = 0; i < 9; i += 1) {
-    ctxArg.beginPath();
-    ctxArg.moveTo(120 + i * 95, 965);
-    ctxArg.lineTo(92 + i * 95, 1010);
-    ctxArg.stroke();
-  }
-
-  ctxArg.restore();
-}
-
-function getEasedProgress(raw) {
-  const t = Math.max(0, Math.min(1, raw));
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function getSlots(layout, imageCount) {
-  const safeCount = Math.max(1, Math.min(3, imageCount));
-  return layoutSlots[layout]?.[safeCount] || layoutSlots.classic[safeCount];
-}
-
-function getFrameFadeProgress(renderData, elapsedMs) {
-  if (!Number.isFinite(renderData.fadeOutStartMs)) {
-    return 0;
-  }
-
-  if (elapsedMs <= renderData.fadeOutStartMs) {
-    return 0;
-  }
-
-  const fadeDuration = Math.max(1, renderData.clipDurationMs - renderData.fadeOutStartMs);
-  return clamp((elapsedMs - renderData.fadeOutStartMs) / fadeDuration, 0, 1);
-}
-
-function drawCountdownOverlay(ctxArg, renderData, elapsedMs, sceneOpacity) {
-  if (!renderData.showCountdown) {
-    return;
-  }
-
-  const remainingMs = Math.max(0, renderData.clipDurationMs - elapsedMs);
-  const remainingSec = Math.ceil(remainingMs / 1000);
-  const label = `${String(remainingSec).padStart(2, "0")}s`;
-  const x = renderData.canvasWidth - 42;
-  const y = 30;
-  const width = 176;
-  const height = 72;
-  const alpha = clamp(0.88 * sceneOpacity, 0.45, 0.92);
-
-  ctxArg.save();
-  ctxArg.globalAlpha = alpha;
-  drawRoundRect(ctxArg, x - width, y, width, height, 14);
-  ctxArg.fillStyle = "rgba(2, 14, 33, 0.72)";
-  ctxArg.fill();
-  ctxArg.strokeStyle = "rgba(244, 217, 151, 0.55)";
-  ctxArg.lineWidth = 1.8;
-  ctxArg.stroke();
-  ctxArg.textAlign = "center";
-  ctxArg.textBaseline = "middle";
-  ctxArg.fillStyle = "#f6e2b0";
-  ctxArg.font = "700 42px Cairo, sans-serif";
-  ctxArg.fillText(label, x - width / 2, y + height / 2 + 1);
-  ctxArg.restore();
-}
-
-function drawGreetingCard(ctxArg, renderData, progress) {
-  const timelineProgress = Math.max(0, Math.min(1, progress));
-  const elapsedMs = renderData.clipDurationMs * timelineProgress;
-  const timeSec = elapsedMs / 1000;
-  const entranceProgress = Math.min(1, timelineProgress / 0.2);
-  const eased = getEasedProgress(entranceProgress);
-  const fadeProgress = getFrameFadeProgress(renderData, elapsedMs);
-  const sceneOpacity = 1 - fadeProgress;
-  const animationState = getAnimationFrameState(renderData.animation, eased, timeSec);
-  const { canvasWidth, canvasHeight } = renderData;
-
-  ctxArg.clearRect(0, 0, canvasWidth, canvasHeight);
-
-  const bgScale = animationState.bgScale;
-  const bgWidth = canvasWidth * bgScale;
-  const bgHeight = canvasHeight * bgScale;
-  const bgX = (canvasWidth - bgWidth) / 2 + animationState.bgOffsetX;
-  const bgY = (canvasHeight - bgHeight) / 2 + animationState.bgOffsetY;
-  fitCover(ctxArg, renderData.templateImage, bgX, bgY, bgWidth, bgHeight);
-
-  const overlayGradient = ctxArg.createLinearGradient(0, 0, 0, canvasHeight);
-  overlayGradient.addColorStop(0, "rgba(3, 15, 33, 0.2)");
-  overlayGradient.addColorStop(0.65, "rgba(2, 13, 31, 0.35)");
-  overlayGradient.addColorStop(1, "rgba(1, 8, 22, 0.72)");
-  ctxArg.fillStyle = overlayGradient;
-  ctxArg.fillRect(0, 0, canvasWidth, canvasHeight);
-
-  drawRibbonLayer(ctxArg, renderData.decorations.ribbons, timeSec, 0.85 * sceneOpacity, canvasHeight);
-  drawPatternDetails(ctxArg, eased, timeSec);
-  drawParticleLayer(ctxArg, renderData.decorations.particles, timeSec, 0.52 * sceneOpacity, canvasWidth, canvasHeight);
-
-  const textAlpha = animationState.textAlpha * sceneOpacity;
-  const slideOffset = animationState.photoOffsetY;
-  const photoScale = animationState.photoScale;
-
-  const slots = getSlots(renderData.layout, renderData.userImages.length);
-
-  slots.forEach((slot, index) => {
-    const userImage = renderData.userImages[index];
-    if (!userImage) {
-      return;
-    }
-
-    const size = slot.size * canvasWidth * photoScale;
-    const x = slot.x * canvasWidth - size / 2;
-    const y = slot.y * canvasHeight - size / 2 + slideOffset;
-
-    drawFramedPhoto(ctxArg, userImage, x, y, size, slot.shape, sceneOpacity);
-  });
-
-  const greetingMotion = getTextMotionFrame(renderData.textAnimation, timeSec, "greeting");
-  const senderMotion = getTextMotionFrame(renderData.textAnimation, timeSec, "sender");
-  const greetingBaseY = 720 + slideOffset * 0.45 + greetingMotion.y;
-
-  ctxArg.save();
-  ctxArg.globalAlpha = textAlpha * greetingMotion.alpha;
-  ctxArg.translate(canvasWidth / 2 + greetingMotion.x, greetingBaseY);
-  ctxArg.rotate(greetingMotion.rotation);
-  ctxArg.scale(greetingMotion.scale, greetingMotion.scale);
-  ctxArg.textAlign = "center";
-  ctxArg.fillStyle = "#f7f2e6";
-  ctxArg.font = "700 62px Cairo, sans-serif";
-  ctxArg.shadowColor = `rgba(243, 219, 158, ${0.22 + greetingMotion.glow * 0.4})`;
-  ctxArg.shadowBlur = 12 + greetingMotion.glow * 16;
-
-  const wrappedEndY = wrapText(ctxArg, renderData.greeting, 0, 0, 850, 68);
-  ctxArg.restore();
-
-  const senderBaseY = greetingBaseY + wrappedEndY * greetingMotion.scale + 88 + senderMotion.y;
-  ctxArg.save();
-  ctxArg.globalAlpha = textAlpha * senderMotion.alpha;
-  ctxArg.translate(canvasWidth / 2 + senderMotion.x, senderBaseY);
-  ctxArg.rotate(senderMotion.rotation * 0.9);
-  ctxArg.scale(senderMotion.scale, senderMotion.scale);
-  ctxArg.textAlign = "center";
-  ctxArg.fillStyle = "#dcb667";
-  ctxArg.font = "700 44px Cinzel, serif";
-  ctxArg.shadowColor = `rgba(220, 182, 103, ${0.2 + senderMotion.glow * 0.3})`;
-  ctxArg.shadowBlur = 8 + senderMotion.glow * 12;
-  ctxArg.fillText(renderData.sender, 0, 0);
-  ctxArg.restore();
-
-  ctxArg.save();
-  ctxArg.globalAlpha = clamp(0.72 * sceneOpacity, 0, 1);
-  ctxArg.textAlign = "right";
-  ctxArg.textBaseline = "bottom";
-  ctxArg.fillStyle = "rgba(244, 217, 151, 0.95)";
-  ctxArg.font = "600 28px Cairo, sans-serif";
-  ctxArg.shadowColor = "rgba(0, 0, 0, 0.32)";
-  ctxArg.shadowBlur = 5;
-  ctxArg.fillText(CREATOR_SIGNATURE, canvasWidth - 30, canvasHeight - 24);
-  ctxArg.restore();
-
-  drawCountdownOverlay(ctxArg, renderData, elapsedMs, sceneOpacity);
-
-  drawSparkleLayer(ctxArg, renderData.decorations.sparkles, timeSec, 0.92 * sceneOpacity);
-
-  if (fadeProgress > 0) {
-    ctxArg.save();
-    ctxArg.globalAlpha = clamp(fadeProgress * 1.1, 0, 1);
-    const fadeGradient = ctxArg.createLinearGradient(0, 0, 0, canvasHeight);
-    fadeGradient.addColorStop(0, "rgba(4, 12, 24, 0.55)");
-    fadeGradient.addColorStop(1, "rgba(0, 0, 0, 1)");
-    ctxArg.fillStyle = fadeGradient;
-    ctxArg.fillRect(0, 0, canvasWidth, canvasHeight);
-    ctxArg.restore();
-  }
-}
-
-function toggleGreetingInputs() {
-  if (!isCustomDesignEnabled()) {
-    el.defaultGreeting.disabled = true;
-    el.customGreeting.disabled = true;
-    return;
-  }
-
-  const mode = getSelectedMode();
-  el.defaultGreeting.disabled = mode !== "default";
-  el.customGreeting.disabled = mode !== "custom";
-}
-
-function toggleDesignModeControls() {
-  const customEnabled = isCustomDesignEnabled();
-
-  el.customControls.disabled = !customEnabled;
-  el.surpriseBtn.disabled = !customEnabled;
-  el.customControlsDropdown.open = customEnabled;
-
-  if (customEnabled) {
-    el.designModeLabel.textContent = "Custom Design ON";
-    el.designModeHint.textContent = "Custom is ON. Use the controls below to fully design your card.";
-    prepareAudioPreview();
-  } else {
-    el.designModeLabel.textContent = "Randomness ON (auto)";
-    el.designModeHint.textContent = "Custom is OFF. Upload image + name, and the app randomizes wish, animation, template, and song.";
-    clearAudioPreview();
-
-    const randomMode = document.querySelector('input[name="greetingMode"][value="random"]');
-    if (randomMode) {
-      randomMode.checked = true;
-    }
-  }
-
-  toggleGreetingInputs();
-}
-
-function populateTemplates() {
-  el.templateGrid.innerHTML = "";
-
-  templates.forEach((template) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "template-card";
-    button.dataset.templateId = template.id;
-    button.innerHTML = `
-      <img src="${pathToUrl(template.src)}" alt="${template.label}" loading="lazy" />
-      <span>${template.label}</span>
-    `;
-
-    button.addEventListener("click", () => {
-      state.selectedTemplateId = template.id;
-      markSelectedTemplate();
-    });
-
-    el.templateGrid.appendChild(button);
-  });
-
-  markSelectedTemplate();
-}
-
-function markSelectedTemplate() {
-  el.templateGrid.querySelectorAll(".template-card").forEach((card) => {
-    const isActive = card.dataset.templateId === state.selectedTemplateId;
-    card.classList.toggle("active", isActive);
-    card.setAttribute("aria-selected", String(isActive));
-  });
-}
-
-function populateGreetingDropdown() {
-  el.defaultGreeting.innerHTML = "";
-  greetings.forEach((line) => {
-    const option = document.createElement("option");
-    option.value = line;
-    option.textContent = line;
-    el.defaultGreeting.appendChild(option);
-  });
-}
-
-function populateAudioDropdown() {
-  el.audioSelect.innerHTML = "";
-
-  audioTracks.forEach((track) => {
-    const option = document.createElement("option");
-    option.value = track.id;
-    option.textContent = track.label;
-    el.audioSelect.appendChild(option);
-  });
-
-  if (state.customAudioTrack) {
-    const customOption = document.createElement("option");
-    customOption.value = CUSTOM_AUDIO_ID;
-    customOption.textContent = state.customAudioTrack.label;
-    el.audioSelect.appendChild(customOption);
-  }
-
-  const hasPreferred = Array.from(el.audioSelect.options).some((option) => option.value === state.selectedAudioId);
-  if (hasPreferred) {
-    el.audioSelect.value = state.selectedAudioId;
-  } else if (el.audioSelect.options.length > 0) {
-    el.audioSelect.value = el.audioSelect.options[0].value;
-    state.selectedAudioId = el.audioSelect.value;
-  }
-}
-
-function upsertCustomAudioOption() {
-  const existing = el.audioSelect.querySelector(`option[value="${CUSTOM_AUDIO_ID}"]`);
-  if (!state.customAudioTrack) {
-    if (existing) {
-      existing.remove();
-    }
-    return;
-  }
-
-  if (existing) {
-    existing.textContent = state.customAudioTrack.label;
-    return;
-  }
-
-  const option = document.createElement("option");
-  option.value = CUSTOM_AUDIO_ID;
-  option.textContent = state.customAudioTrack.label;
-  el.audioSelect.appendChild(option);
-}
-
-function clearAudioPreview() {
-  el.audioPreview.pause();
-  el.audioPreview.loop = false;
-  el.audioPreview.removeAttribute("src");
-  el.audioPreview.load();
-}
-
-function prepareAudioPreview(trackOverride = null) {
-  const track = trackOverride || getSelectedAudioTrack();
-
-  if (!track.src) {
-    clearAudioPreview();
-    return;
-  }
-
-  const resolvedSrc = getMediaSrc(track.src);
-  el.audioPreview.src = resolvedSrc;
-  el.audioPreview.load();
-  resolveAudioDurationMs(track.src).catch(() => null);
-}
-
-function onCustomAudioUploadChange() {
-  const file = el.customAudioUpload.files?.[0];
-  if (!file) {
-    return;
-  }
-
-  if (!file.type.startsWith("audio/")) {
-    setStatus("Please upload a valid audio file.", true);
-    el.customAudioUpload.value = "";
-    return;
-  }
-
-  clearCustomAudioTrack();
-  const objectUrl = URL.createObjectURL(file);
-  state.customAudioTrack = {
-    id: CUSTOM_AUDIO_ID,
-    label: `Custom: ${file.name}`,
-    src: objectUrl
-  };
-  upsertCustomAudioOption();
-  el.audioSelect.value = CUSTOM_AUDIO_ID;
-  state.selectedAudioId = CUSTOM_AUDIO_ID;
-  prepareAudioPreview();
-  setStatus("Custom background audio added.");
-}
-
-function onAudioSelectionChange() {
-  state.selectedAudioId = el.audioSelect.value || "none";
-  prepareAudioPreview();
-}
-
+// ---------- 7. Build render data (random animation always) ----------
 async function buildRenderData() {
-  if (!state.uploadedImages.length) {
-    throw new Error("Please upload at least one photo before generating.");
+  if (!state.uploadedImages.length) throw new Error("Upload at least one photo.");
+
+  const userImages = await loadUserImages(state.uploadedImages.slice(0, 3));
+  const templateObj = templates.find(t => t.id === state.selectedTemplateId) || templates[0];
+  const templateImage = await loadImage(templateObj.src);
+
+  let greeting = "";
+  const mode = getSelectedMode();
+  if (mode === "default") greeting = el.defaultGreeting.value;
+  else if (mode === "custom") greeting = el.customGreeting.value.trim() || greetings[0];
+  else greeting = randomFrom(greetings);
+
+  const sender = el.senderName.value.trim() || "From Your Family";
+  const layout = el.layoutSelect.value;
+
+  let selectedAudioTrack = null;
+  const audioVal = el.audioSelect.value;
+  if (audioVal === "custom-upload" && state.customAudioTrack) {
+    selectedAudioTrack = state.customAudioTrack;
+  } else {
+    const track = audioTracks.find(t => t.id === audioVal);
+    if (track) selectedAudioTrack = track;
+    else selectedAudioTrack = { id: "none", src: null, label: "No Audio", durationMs: 20000 };
   }
 
-  const selection = resolveDesignSelection();
-  const selectedTemplate = selection.selectedTemplate;
-  const templateImage = await loadImage(pathToUrl(selectedTemplate.src));
-  const userImages = await Promise.all(state.uploadedImages.map((file) => loadUploadedImage(file)));
-  const greeting = selection.greeting;
-  const sender = el.senderName.value.trim() || "From Your Family";
-  const layout = selection.layout;
-  const animation = selection.animation;
-  const timing = await resolveVideoTiming(selection.selectedAudioTrack);
-  const seedText = `${selectedTemplate.id}|${sender}|${greeting}|${layout}|${animation}|${selection.isRandomMode ? "random" : "custom"}`;
-  const decorationSeed = createHashSeed(seedText);
-  const textAnimationSeed = createHashSeed(`${seedText}|${Date.now()}|${Math.random()}`);
-  const decorations = buildDecorations(decorationSeed, el.canvas.width, el.canvas.height);
-  const textAnimation = buildTextAnimation(textAnimationSeed);
+  let clipDurationMs = selectedAudioTrack.durationMs || 20000;
+  if (selectedAudioTrack.src && !selectedAudioTrack.durationMs) {
+    clipDurationMs = await getAudioDuration(selectedAudioTrack.src);
+    selectedAudioTrack.durationMs = clipDurationMs;
+  }
+  clipDurationMs = Math.min(MAX_VIDEO_DURATION_MS, Math.max(8000, clipDurationMs));
+
+  // Always pick a random animation
+  const randomAnimation = getRandomAnimation();
 
   return {
     templateImage,
@@ -1324,513 +446,314 @@ async function buildRenderData() {
     greeting,
     sender,
     layout,
-    animation,
-    selectedAudioTrack: selection.selectedAudioTrack,
-    isRandomMode: selection.isRandomMode,
-    showCountdown: true,
-    sourceDurationMs: timing.sourceDurationMs,
-    decorations,
-    textAnimation,
-    clipDurationMs: timing.clipDurationMs,
-    fadeOutStartMs: timing.fadeOutStartMs,
-    canvasWidth: el.canvas.width,
-    canvasHeight: el.canvas.height
+    clipDurationMs,
+    canvasWidth: 1080,
+    canvasHeight: 1080,
+    selectedAudioTrack,
+    animation: randomAnimation
   };
 }
 
-function enableDownloads(enable) {
-  el.downloadPngBtn.disabled = !enable;
-  el.downloadGifBtn.disabled = true;
-  el.downloadVideoBtn.disabled = !enable;
-}
+// ---------- 8. Video generation with countdown ----------
+async function generateVideo() {
+  if (state.isGenerating) return;
+  state.isGenerating = true;
+  showLoading(true, "Preparing...");
 
-async function animatePreview(renderData) {
-  state.isAnimating = true;
+  try {
+    const renderData = await buildRenderData();
+    const durationMs = renderData.clipDurationMs;
+    const totalSeconds = durationMs / 1000;
 
-  if (state.animationHandle) {
-    cancelAnimationFrame(state.animationHandle);
-    state.animationHandle = null;
-  }
+    // Offscreen canvas
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = renderData.canvasWidth;
+    offCanvas.height = renderData.canvasHeight;
+    const offCtx = offCanvas.getContext("2d");
 
-  const durationMs = Math.max(1000, renderData.clipDurationMs || exportConfig.previewDurationMs);
-  const started = performance.now();
-
-  return new Promise((resolve) => {
-    const step = (time) => {
-      const progress = Math.min(1, (time - started) / durationMs);
-      drawGreetingCard(ctx, renderData, progress);
-
-      if (progress < 1) {
-        state.animationHandle = requestAnimationFrame(step);
-        return;
+    // Stream setup
+    const stream = offCanvas.captureStream(30);
+    let audioElement = null;
+    const track = renderData.selectedAudioTrack;
+    if (track && track.src) {
+      audioElement = new Audio(track.src);
+      audioElement.loop = track.durationMs ? track.durationMs < durationMs + 500 : true;
+      await audioElement.play().catch(e => console.warn("Audio play failed", e));
+      if (audioElement.captureStream) {
+        const audioStream = audioElement.captureStream();
+        audioStream.getAudioTracks().forEach(t => stream.addTrack(t));
       }
+    }
 
-      state.lastRenderData = renderData;
-      state.isAnimating = false;
-      state.animationHandle = null;
-      resolve();
+    const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+    const recorder = new MediaRecorder(stream, { mimeType: mime });
+    const chunks = [];
+    recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    recorder.start();
+
+    const startTime = performance.now();
+    let animFrame;
+
+    const renderFrame = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / durationMs);
+      const remaining = Math.max(0, durationMs - elapsed) / 1000;
+      updateCountdown(remaining, totalSeconds);
+      drawGreetingCard(offCtx, renderData, progress, renderData.animation);
+      drawGreetingCard(state.ctx, renderData, progress, renderData.animation); // preview
+      if (progress < 1) {
+        animFrame = requestAnimationFrame(renderFrame);
+      } else {
+        recorder.stop();
+      }
     };
 
-    state.animationHandle = requestAnimationFrame(step);
+    animFrame = requestAnimationFrame(renderFrame);
+
+    await new Promise(resolve => {
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `eid-video-${Date.now()}.webm`;
+        link.click();
+        URL.revokeObjectURL(url);
+        if (audioElement) audioElement.pause();
+        resolve();
+      };
+    });
+
+    cancelAnimationFrame(animFrame);
+    setStatus("Video generated and downloaded!");
+    showLoading(false);
+  } catch (err) {
+    setStatus(err.message || "Generation failed", true);
+    showLoading(false);
+  } finally {
+    state.isGenerating = false;
+  }
+}
+
+// ---------- 9. PNG download ----------
+async function onDownloadPng() {
+  try {
+    if (!state.uploadedImages.length) throw new Error("Upload photos first.");
+    setStatus("Generating PNG...");
+    const renderData = await buildRenderData();
+    drawGreetingCard(state.ctx, renderData, 1, renderData.animation);
+    const link = document.createElement("a");
+    link.download = `eid-card-${Date.now()}.png`;
+    link.href = el.canvas.toDataURL();
+    link.click();
+    setStatus("PNG downloaded.");
+  } catch (err) {
+    setStatus(err.message, true);
+  }
+}
+
+// ---------- 10. UI population and event handlers ----------
+function populateTemplates() {
+  if (!el.templateGrid) return;
+  el.templateGrid.innerHTML = "";
+  templates.forEach(tmpl => {
+    const btn = document.createElement("button");
+    btn.className = "template-card";
+    btn.dataset.id = tmpl.id;
+    btn.innerHTML = `<img src="${tmpl.src}" alt="${tmpl.label}" loading="lazy"><span>${tmpl.label}</span>`;
+    btn.onclick = () => {
+      state.selectedTemplateId = tmpl.id;
+      document.querySelectorAll(".template-card").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+    };
+    el.templateGrid.appendChild(btn);
+  });
+  const firstCard = document.querySelector(".template-card");
+  if (firstCard) {
+    firstCard.classList.add("active");
+    state.selectedTemplateId = templates[0].id;
+  }
+}
+
+function populateAudioDropdown() {
+  if (!el.audioSelect) return;
+  el.audioSelect.innerHTML = "";
+  audioTracks.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t.id;
+    opt.textContent = t.label;
+    el.audioSelect.appendChild(opt);
+  });
+  if (state.customAudioTrack) {
+    const opt = document.createElement("option");
+    opt.value = "custom-upload";
+    opt.textContent = state.customAudioTrack.label;
+    el.audioSelect.appendChild(opt);
+  }
+  el.audioSelect.value = "a1";
+}
+
+function populateGreetingDropdown() {
+  if (!el.defaultGreeting) return;
+  el.defaultGreeting.innerHTML = "";
+  greetings.forEach(g => {
+    const opt = document.createElement("option");
+    opt.value = g;
+    opt.textContent = g;
+    el.defaultGreeting.appendChild(opt);
   });
 }
 
-function downloadBlob(blob, fileName) {
-  if (!(blob instanceof Blob) || blob.size === 0) {
-    throw new Error("Export failed: empty media file.");
-  }
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.rel = "noopener";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-
-function downloadDataUrl(dataUrl, fileName) {
-  const link = document.createElement("a");
-  link.href = dataUrl;
-  link.download = fileName;
-  link.rel = "noopener";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-}
-
-function isCanvasSecurityError(error) {
-  const name = String(error?.name || "");
-  const message = String(error?.message || "").toLowerCase();
-  return name === "SecurityError" || message.includes("tainted") || message.includes("insecure");
-}
-
-async function exportCanvasPngBlob(canvas) {
-  if (typeof canvas.toBlob === "function") {
-    return await new Promise((resolve, reject) => {
-      try {
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            reject(new Error("PNG encoder returned an empty blob."));
-            return;
-          }
-          resolve(blob);
-        }, "image/png");
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  // Fallback for browsers without canvas.toBlob support.
-  try {
-    const dataUrl = canvas.toDataURL("image/png");
-    const response = await fetch(dataUrl);
-    return await response.blob();
-  } catch (error) {
-    throw error;
-  }
-}
-
-function timestampedName(extension) {
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  return `eid-greeting-${stamp}.${extension}`;
-}
-
-function getVideoExtensionFromMime(mimeType) {
-  if (mimeType?.includes("mp4")) {
-    return "mp4";
-  }
-  return "webm";
-}
-
-function getPreferredRecorderMime() {
-  if (typeof MediaRecorder === "undefined") {
-    return "";
-  }
-
-  const candidates = [
-    "video/webm;codecs=vp9,opus",
-    "video/webm;codecs=vp8,opus",
-    "video/webm",
-    "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
-    "video/mp4;codecs=h264,aac",
-    "video/mp4"
-  ];
-
-  return candidates.find((mime) => MediaRecorder.isTypeSupported(mime)) || "";
-}
-
-async function onGenerateClick() {
-  if (state.isAnimating) {
-    return false;
-  }
-
-  try {
-    setStatus("Rendering greeting...");
-    scrollToPreviewSection();
-    setLoadingOverlay(true, "Rendering preview...");
-    const renderData = await buildRenderData();
-    prepareAudioPreview(renderData.selectedAudioTrack);
-
-    if (el.audioPreview.src) {
-      const shouldLoopPreviewAudio = Number.isFinite(renderData.sourceDurationMs)
-        && renderData.sourceDurationMs > 0
-        && renderData.clipDurationMs > renderData.sourceDurationMs + 120;
-      el.audioPreview.loop = shouldLoopPreviewAudio;
-      el.audioPreview.currentTime = 0;
-      el.audioPreview.play().catch(() => undefined);
-    }
-
-    await animatePreview(renderData);
-    if (el.audioPreview.src) {
-      el.audioPreview.pause();
-      el.audioPreview.currentTime = 0;
-      el.audioPreview.loop = false;
-    }
-    enableDownloads(true);
-    const seconds = Math.round(renderData.clipDurationMs / 1000);
-    if (renderData.isRandomMode) {
-      setStatus(`Ready. Random design generated (${seconds}s). Download PNG or Video.`);
-    } else {
-      setStatus(`Ready. Custom design generated (${seconds}s). Download PNG or Video.`);
-    }
-    return true;
-  } catch (error) {
-    setStatus(error.message, true);
-    return false;
-  } finally {
-    setLoadingOverlay(false);
-  }
-}
-
-async function onDownloadPngClick() {
-  try {
-    if (!state.lastRenderData) {
-      const isGenerated = await onGenerateClick();
-      if (!isGenerated || !state.lastRenderData) {
-        return;
-      }
-    }
-
-    const fileName = timestampedName("png");
-    let pngBlob;
-    try {
-      pngBlob = await exportCanvasPngBlob(el.canvas);
-      downloadBlob(pngBlob, fileName);
-    } catch (blobError) {
-      if (!isCanvasSecurityError(blobError)) {
-        throw blobError;
-      }
-
-      // Last chance fallback for strict browser policies.
-      const dataUrl = el.canvas.toDataURL("image/png");
-      downloadDataUrl(dataUrl, fileName);
-    }
-
-    setStatus("PNG downloaded.");
-  } catch (error) {
-    if (isCanvasSecurityError(error)) {
-      setStatus("PNG export blocked by browser security. Run the app via a local server (e.g., npx serve .) instead of opening index.html directly.", true);
-      return;
-    }
-    setStatus(error.message || "Failed to download PNG.", true);
-  }
-}
-
-async function onDownloadGifClick() {
-  if (!GIF_EXPORT_ENABLED) {
-    setStatus("GIF export is unavailable in this offline/mobile-safe build. Use Download Video.", true);
+function onCustomAudioUpload(e) {
+  const file = e.target.files[0];
+  if (!file || !file.type.startsWith("audio/")) {
+    setStatus("Please upload a valid audio file.", true);
     return;
   }
-}
-
-async function onDownloadVideoClick() {
-  if (!("MediaRecorder" in window)) {
-    setStatus("Video export is not supported in this browser.", true);
-    return;
-  }
-
-  let recordedAudio = {
-    audioElement: null,
-    audioTracks: [],
-    hasAudioTrack: false,
-    setLevel: () => undefined,
-    cleanup: () => undefined
+  const url = URL.createObjectURL(file);
+  if (state.customAudioTrack) URL.revokeObjectURL(state.customAudioTrack.src);
+  state.customAudioTrack = {
+    id: "custom-upload",
+    label: `🎵 ${file.name}`,
+    src: url,
+    durationMs: 30000
   };
-
-  try {
-    setLoadingOverlay(true, "Preparing video...");
-
-    if (!state.lastRenderData) {
-      const isGenerated = await onGenerateClick();
-      if (!isGenerated || !state.lastRenderData) {
-        return;
-      }
-    }
-
-    scrollToPreviewSection();
-
-    const selectedTrack = state.lastRenderData.selectedAudioTrack || getSelectedAudioTrack();
-    let videoTiming = await resolveVideoTiming(selectedTrack);
-    const videoTextAnimation = buildTextAnimation(createHashSeed(`video-text|${Date.now()}|${Math.random()}`));
-
-    const offscreen = document.createElement("canvas");
-    offscreen.width = state.lastRenderData.canvasWidth;
-    offscreen.height = state.lastRenderData.canvasHeight;
-    const offCtx = offscreen.getContext("2d");
-
-    const fps = 30;
-    const stream = offscreen.captureStream(fps);
-    const tracks = [...stream.getVideoTracks()];
-    recordedAudio = await prepareAudioForRecording(selectedTrack);
-    const { audioElement } = recordedAudio;
-    recordedAudio.audioTracks.forEach((track) => tracks.push(track));
-
-    // If metadata lookup failed earlier, use actual loaded audio duration when available.
-    if (
-      selectedTrack.src &&
-      !videoTiming.sourceDurationMs &&
-      audioElement &&
-      isValidDuration(audioElement.duration)
-    ) {
-      const derivedDurationMs = Math.round(audioElement.duration * 1000);
-      const derivedTiming = buildVideoTimingFromDurationMs(derivedDurationMs);
-      videoTiming = {
-        ...videoTiming,
-        sourceDurationMs: derivedDurationMs,
-        clipDurationMs: derivedTiming.clipDurationMs,
-        fadeOutStartMs: derivedTiming.fadeOutStartMs,
-        wasCapped: derivedTiming.wasCapped
-      };
-    }
-
-    const renderData = {
-      ...state.lastRenderData,
-      clipDurationMs: videoTiming.clipDurationMs,
-      fadeOutStartMs: videoTiming.fadeOutStartMs,
-      textAnimation: videoTextAnimation,
-      showCountdown: false
-    };
-    const previewRenderData = {
-      ...renderData,
-      showCountdown: true
-    };
-
-    if (videoTiming.wasCapped) {
-      setStatus(`Song is very long. Video duration is capped at ${Math.round(exportConfig.maxVideoDurationMs / 1000)} seconds.`);
-    }
-
-    const mixedStream = new MediaStream(tracks);
-    const chosenMimeType = getPreferredRecorderMime();
-    if (!chosenMimeType) {
-      throw new Error("No supported video codec found for MediaRecorder.");
-    }
-    const recorder = new MediaRecorder(mixedStream, { mimeType: chosenMimeType });
-
-    const chunks = [];
-    recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        chunks.push(event.data);
-      }
-    };
-
-    const stopped = new Promise((resolve) => {
-      recorder.onstop = () => resolve();
-    });
-
-    if (chosenMimeType.startsWith("video/mp4")) {
-      setStatus("Recording MP4 video...");
-    } else {
-      setStatus("Recording WebM video...");
-    }
-    recorder.start();
-
-    const durationMs = renderData.clipDurationMs;
-    let shownSeconds = null;
-
-    if (audioElement) {
-      const shouldLoopRecordedAudio = selectedTrack.src
-        && isValidDuration(audioElement.duration)
-        && durationMs > Math.round(audioElement.duration * 1000) + 120;
-      audioElement.loop = Boolean(shouldLoopRecordedAudio);
-      audioElement.currentTime = 0;
-      audioElement.play().catch(() => undefined);
-    }
-
-    const started = performance.now();
-
-    await new Promise((resolve) => {
-      const step = (time) => {
-        const elapsedMs = time - started;
-        const progress = Math.min(1, elapsedMs / durationMs);
-        const leftSec = Math.max(0, Math.ceil((durationMs - elapsedMs) / 1000));
-        if (leftSec !== shownSeconds) {
-          shownSeconds = leftSec;
-          setLoadingOverlay(true, `Generating video... ${String(leftSec).padStart(2, "0")}s left`);
-        }
-        drawGreetingCard(offCtx, renderData, progress);
-        drawGreetingCard(ctx, previewRenderData, progress);
-
-        if (audioElement && Number.isFinite(videoTiming.fadeOutStartMs)) {
-          if (elapsedMs >= videoTiming.fadeOutStartMs) {
-            const fadeWindow = Math.max(1, durationMs - videoTiming.fadeOutStartMs);
-            const fadeRatio = clamp((elapsedMs - videoTiming.fadeOutStartMs) / fadeWindow, 0, 1);
-            recordedAudio.setLevel(1 - fadeRatio);
-          } else {
-            recordedAudio.setLevel(1);
-          }
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(step);
-          return;
-        }
-
-        resolve();
-      };
-
-      requestAnimationFrame(step);
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 120));
-    recorder.stop();
-    await stopped;
-
-    if (audioElement) {
-      audioElement.pause();
-      audioElement.loop = false;
-      recordedAudio.setLevel(1);
-    }
-
-    const extension = getVideoExtensionFromMime(chosenMimeType);
-    const recordedBlob = new Blob(chunks, { type: chosenMimeType });
-    downloadBlob(recordedBlob, timestampedName(extension));
-
-    const label = extension.toUpperCase();
-    if (selectedTrack.src && !recordedAudio.hasAudioTrack) {
-      setStatus(`${label} downloaded. Audio capture was unavailable in this browser.`);
-    } else if (videoTiming.wasCapped) {
-      setStatus(`${label} downloaded. Duration capped at ${Math.round(exportConfig.maxVideoDurationMs / 1000)} seconds.`);
-    } else {
-      setStatus(`${label} downloaded.`);
-    }
-  } catch (error) {
-    setStatus(error.message, true);
-  } finally {
-    setLoadingOverlay(false);
-    try {
-      if (recordedAudio.audioElement) {
-        recordedAudio.audioElement.pause();
-        recordedAudio.audioElement.loop = false;
-        recordedAudio.setLevel(1);
-      }
-      recordedAudio.cleanup();
-    } catch (_cleanupError) {
-      // Ignore cleanup errors.
-    }
-  }
+  populateAudioDropdown();
+  el.audioSelect.value = "custom-upload";
+  el.audioPreview.src = url;
+  el.audioPreview.load();
+  setStatus("Custom audio added.");
 }
 
-function randomizeSelection(selectElement) {
-  const options = Array.from(selectElement.options);
-  const chosen = randomFrom(options);
-  selectElement.value = chosen.value;
+function onAudioSelectChange() {
+  const val = el.audioSelect.value;
+  if (val === "custom-upload" && state.customAudioTrack) {
+    el.audioPreview.src = state.customAudioTrack.src;
+  } else {
+    const track = audioTracks.find(t => t.id === val);
+    el.audioPreview.src = track ? track.src : "";
+  }
+  el.audioPreview.load();
 }
 
-async function onSurpriseClick() {
-  if (state.isAnimating) {
-    return;
+function onSurprise() {
+  if (state.isGenerating) return;
+  const randTemplate = randomFrom(templates);
+  state.selectedTemplateId = randTemplate.id;
+  document.querySelectorAll(".template-card").forEach(c => c.classList.remove("active"));
+  const activeCard = document.querySelector(`.template-card[data-id="${randTemplate.id}"]`);
+  if (activeCard) activeCard.classList.add("active");
+  el.layoutSelect.value = randomFrom(["classic", "ribbon", "collage"]);
+  document.querySelector('input[name="greetingMode"][value="random"]').checked = true;
+  const randAudio = randomFrom(audioTracks);
+  if (randAudio) el.audioSelect.value = randAudio.id;
+  setStatus("Surprise! New random settings applied.");
+}
+
+function toggleDesignMode() {
+  const custom = isCustomEnabled();
+  if (el.customControls) el.customControls.disabled = !custom;
+  if (el.customControlsDropdown) el.customControlsDropdown.open = custom;
+  if (el.designModeLabel) el.designModeLabel.textContent = custom ? "Custom Design ON" : "Randomness ON";
+  if (el.designModeHint) el.designModeHint.textContent = custom ? "You choose template, layout, song, greeting – animation is random." : "Everything is random.";
+  const mode = getSelectedMode();
+  if (el.defaultGreeting) el.defaultGreeting.disabled = !custom || mode !== "default";
+  if (el.customGreeting) el.customGreeting.disabled = !custom || mode !== "custom";
+}
+
+function onGreetingModeChange() {
+  const custom = isCustomEnabled();
+  const mode = getSelectedMode();
+  if (custom) {
+    if (el.defaultGreeting) el.defaultGreeting.disabled = mode !== "default";
+    if (el.customGreeting) el.customGreeting.disabled = mode !== "custom";
+  } else {
+    if (el.defaultGreeting) el.defaultGreeting.disabled = true;
+    if (el.customGreeting) el.customGreeting.disabled = true;
   }
-
-  state.selectedTemplateId = randomFrom(templates).id;
-  markSelectedTemplate();
-
-  randomizeSelection(el.layoutSelect);
-  randomizeSelection(el.animationSelect);
-
-  const randomMode = document.querySelector('input[name="greetingMode"][value="random"]');
-  if (randomMode) {
-    randomMode.checked = true;
-    toggleGreetingInputs();
-  }
-
-  setStatus("Surprise options picked. Rendering...");
-  await onGenerateClick();
 }
 
 function bindEvents() {
-  el.photoUpload.addEventListener("change", () => {
-    const files = Array.from(el.photoUpload.files || []).slice(0, 3);
-
-    if ((el.photoUpload.files || []).length > 3) {
-      setStatus("Only the first 3 photos are used.");
-    }
-
-    clearUploadedImages();
-    state.uploadedImages = files;
-    updateUploadSummary(files);
-
-    enableDownloads(false);
-  });
-
-  el.modeInputs.forEach((input) => {
-    input.addEventListener("change", toggleGreetingInputs);
-  });
-
-  el.customModeToggle.addEventListener("change", () => {
-    toggleDesignModeControls();
-    enableDownloads(false);
-  });
-
-  el.audioSelect.addEventListener("change", onAudioSelectionChange);
-  el.customAudioUpload.addEventListener("change", onCustomAudioUploadChange);
-  el.audioPreview.addEventListener("error", () => {
-    setStatus("Selected audio could not be loaded (404/path issue). Choose another built-in song or upload your own.", true);
-  });
-  el.generateBtn.addEventListener("click", onGenerateClick);
-  el.surpriseBtn.addEventListener("click", onSurpriseClick);
-  el.downloadPngBtn.addEventListener("click", onDownloadPngClick);
-  el.downloadGifBtn.addEventListener("click", onDownloadGifClick);
-  el.downloadVideoBtn.addEventListener("click", onDownloadVideoClick);
-
-  window.addEventListener("beforeunload", () => {
-    clearUploadedImages();
-    clearCustomAudioTrack();
-  });
+  if (el.photoUpload) {
+    el.photoUpload.addEventListener("change", () => {
+      const files = Array.from(el.photoUpload.files).slice(0, 3);
+      state.uploadedImages = files;
+      if (el.uploadList) el.uploadList.textContent = files.length ? `${files.length} photo(s) selected.` : "No photos selected.";
+    });
+  }
+  if (el.createVideoBtn) el.createVideoBtn.addEventListener("click", generateVideo);
+  if (el.downloadPngBtn) el.downloadPngBtn.addEventListener("click", onDownloadPng);
+  if (el.surpriseBtn) el.surpriseBtn.addEventListener("click", onSurprise);
+  if (el.customModeToggle) el.customModeToggle.addEventListener("change", toggleDesignMode);
+  if (el.modeInputs) el.modeInputs.forEach(inp => inp.addEventListener("change", onGreetingModeChange));
+  if (el.customAudioUpload) el.customAudioUpload.addEventListener("change", onCustomAudioUpload);
+  if (el.audioSelect) el.audioSelect.addEventListener("change", onAudioSelectChange);
 }
 
-function drawInitialCanvas() {
-  const gradient = ctx.createLinearGradient(0, 0, 0, el.canvas.height);
-  gradient.addColorStop(0, "#0e305a");
-  gradient.addColorStop(1, "#071f3d");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, el.canvas.width, el.canvas.height);
-
-  ctx.fillStyle = "rgba(244, 217, 151, 0.9)";
-  ctx.font = "700 62px Cinzel, serif";
-  ctx.textAlign = "center";
-  ctx.fillText("Eid Greeting Generator", el.canvas.width / 2, 430);
-
-  ctx.font = "600 42px Cairo, sans-serif";
-  ctx.fillStyle = "rgba(247, 242, 230, 0.95)";
-  ctx.fillText("Upload photos and click Generate", el.canvas.width / 2, 520);
-
-  drawPatternDetails(ctx, 1);
+function drawPlaceholder() {
+  if (!state.ctx) return;
+  const grad = state.ctx.createLinearGradient(0, 0, 0, 1080);
+  grad.addColorStop(0, "#0e305a");
+  grad.addColorStop(1, "#071f3d");
+  state.ctx.fillStyle = grad;
+  state.ctx.fillRect(0, 0, 1080, 1080);
+  state.ctx.fillStyle = "#f4d997";
+  state.ctx.font = "700 48px Cinzel";
+  state.ctx.textAlign = "center";
+  state.ctx.fillText("Eid Video Studio", 540, 480);
+  state.ctx.font = "28px Cairo";
+  state.ctx.fillStyle = "#ddd";
+  state.ctx.fillText("Upload photos & click Create Video", 540, 580);
 }
 
-function init() {
+// ---------- 11. Initialization after DOM ready ----------
+document.addEventListener("DOMContentLoaded", () => {
+  // Assign all DOM elements
+  el = {
+    customModeToggle: document.getElementById("customModeToggle"),
+    designModeLabel: document.getElementById("designModeLabel"),
+    designModeHint: document.getElementById("designModeHint"),
+    customControls: document.getElementById("customControls"),
+    customControlsDropdown: document.getElementById("customControlsDropdown"),
+    templateGrid: document.getElementById("templateGrid"),
+    photoUpload: document.getElementById("photoUpload"),
+    uploadList: document.getElementById("uploadList"),
+    senderName: document.getElementById("senderName"),
+    defaultGreeting: document.getElementById("defaultGreeting"),
+    customGreeting: document.getElementById("customGreeting"),
+    modeInputs: document.querySelectorAll('input[name="greetingMode"]'),
+    layoutSelect: document.getElementById("layoutSelect"),
+    audioSelect: document.getElementById("audioSelect"),
+    customAudioUpload: document.getElementById("customAudioUpload"),
+    audioPreview: document.getElementById("audioPreview"),
+    createVideoBtn: document.getElementById("createVideoBtn"),
+    surpriseBtn: document.getElementById("surpriseBtn"),
+    downloadPngBtn: document.getElementById("downloadPngBtn"),
+    statusMsg: document.getElementById("statusMsg"),
+    loadingOverlay: document.getElementById("loadingOverlay"),
+    countdownNumber: document.getElementById("countdownNumber"),
+    loadingText: document.getElementById("loadingText"),
+    canvas: document.getElementById("greetingCanvas")
+  };
+
+  // Validate essential elements
+  if (!el.canvas) {
+    console.error("Canvas element not found!");
+    return;
+  }
+  state.canvas = el.canvas;
+  state.ctx = el.canvas.getContext("2d");
+  if (!state.ctx) {
+    console.error("Could not get canvas context!");
+    return;
+  }
+
+  // Now initialize UI
   populateTemplates();
-  populateGreetingDropdown();
   populateAudioDropdown();
+  populateGreetingDropdown();
   bindEvents();
-  el.customModeToggle.checked = false;
-  toggleDesignModeControls();
-  drawInitialCanvas();
-  enableDownloads(false);
-}
-
-init();
-
+  toggleDesignMode();
+  drawPlaceholder();
+  setStatus("Ready. Upload photos and click Create Video.");
+});
