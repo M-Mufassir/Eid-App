@@ -1,7 +1,6 @@
 // ============================================================
-//  Eid Video Studio – Full Decorations & Random Animations
-//  Uses local assets: Eid Photos/ & Eid - songs/
-//  Features: ribbons, particles, sparkles, lanterns
+//  Eid Video Studio – Final Layout & Rocket Opening
+//  Photos center, greeting under photos, rocket blast intro
 // ============================================================
 
 // ---------- 1. Asset arrays ----------
@@ -372,7 +371,54 @@ function drawPatternDetails(ctx, progress, timeSec = 0) {
   ctx.restore();
 }
 
-// ---------- 5. Global state ----------
+// ---------- 5. Opening animation: rocket blast & sparkles ----------
+function drawOpeningEffect(ctx, progress, w, h) {
+  if (progress > 0.2) return; // only first 20% of video
+
+  // intensity decreases as progress increases
+  const intensity = 1 - (progress / 0.2);
+  const t = progress * 5; // faster animation
+
+  // radial burst from center
+  const centerX = w / 2;
+  const centerY = h / 2;
+  const maxRadius = w * 0.3 * intensity;
+  const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, maxRadius);
+  gradient.addColorStop(0, `rgba(255, 200, 100, ${0.7 * intensity})`);
+  gradient.addColorStop(1, `rgba(255, 80, 40, 0)`);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, w, h);
+
+  // floating embers (rocket sparks)
+  for (let i = 0; i < 40 * intensity; i++) {
+    const angle = (i * 137.5) * Math.PI / 180 + t * 5;
+    const radius = 80 + Math.sin(t * 10 + i) * 30;
+    const x = centerX + Math.cos(angle) * radius * intensity;
+    const y = centerY + Math.sin(angle) * radius * intensity;
+    const size = 3 + Math.sin(t * 20 + i) * 2;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 150, 50, ${0.8 * intensity})`;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x - 2, y - 1, size * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 80, 20, ${0.6 * intensity})`;
+    ctx.fill();
+  }
+
+  // random sparkles (like glitter)
+  for (let i = 0; i < 60 * intensity; i++) {
+    const x = centerX + (Math.random() - 0.5) * w * 0.8;
+    const y = centerY + (Math.random() - 0.5) * h * 0.8;
+    const size = 1 + Math.random() * 4;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 215, 0, ${0.9 * intensity})`;
+    ctx.fill();
+  }
+}
+
+// ---------- 6. Global state ----------
 let state = {
   selectedTemplateId: null,
   uploadedImages: [],
@@ -384,7 +430,7 @@ let state = {
 
 let el = {};
 
-// ---------- 6. Helper functions ----------
+// ---------- 7. Helper functions ----------
 function setStatus(msg, isError = false) {
   if (!el.statusMsg) return;
   el.statusMsg.textContent = msg;
@@ -424,7 +470,7 @@ function isCustomEnabled() {
   return el.customModeToggle?.checked;
 }
 
-// ---------- 7. Image & audio loading ----------
+// ---------- 8. Image & audio loading ----------
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -458,7 +504,7 @@ async function getAudioDuration(src) {
   });
 }
 
-// ---------- 8. Drawing with cover cropping (no distortion) ----------
+// ---------- 9. Drawing with cover cropping ----------
 function drawCover(ctx, img, x, y, w, h) {
   const imgAspect = img.width / img.height;
   const targetAspect = w / h;
@@ -514,6 +560,7 @@ function getEasedProgress(raw) {
   return 1 - Math.pow(1 - t, 3);
 }
 
+// MAIN DRAWING FUNCTION – with opening effect and repositioned text
 function drawGreetingCard(ctx, renderData, progress, animation) {
   const w = renderData.canvasWidth;
   const h = renderData.canvasHeight;
@@ -526,18 +573,22 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
   ctx.fillStyle = "rgba(0,0,0,0.35)";
   ctx.fillRect(0, 0, w, h);
 
-  // Decorative layers (ribbons, particles, sparkles, pattern)
+  // Decorative layers behind everything
   drawRibbonLayer(ctx, renderData.decorations.ribbons, timeSec, 0.85, h);
   drawPatternDetails(ctx, eased, timeSec);
   drawParticleLayer(ctx, renderData.decorations.particles, timeSec, 0.52, w, h);
   drawSparkleLayer(ctx, renderData.decorations.sparkles, timeSec, 0.92);
 
-  // Get animation motion
+  // Opening effect (rocket blast) on top of background but before photos
+  drawOpeningEffect(ctx, progress, w, h);
+
+  // Animation motion
   const t = progress * Math.PI * 2;
   const motion = animation.getMotion(t);
   const photoYoffset = motion.photoY;
   const photoScale = motion.photoScale;
 
+  // Draw photo frames (center)
   const slots = layoutSlots[renderData.layout]?.[Math.min(3, renderData.userImages.length)] || layoutSlots.classic[1];
   slots.forEach((slot, idx) => {
     const img = renderData.userImages[idx];
@@ -546,7 +597,7 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
     const x = slot.x * w - size / 2;
     const y = slot.y * h - size / 2 + photoYoffset;
 
-    // Frame
+    // Frame background
     ctx.save();
     if (slot.shape === "circle") {
       ctx.beginPath();
@@ -559,7 +610,6 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
       ctx.fill();
     }
 
-    // Clip and draw photo
     ctx.beginPath();
     if (slot.shape === "circle") {
       ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
@@ -570,7 +620,6 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
     drawCover(ctx, img, x, y, size, size);
     ctx.restore();
 
-    // Outer border
     ctx.beginPath();
     ctx.strokeStyle = "#f4d58c";
     ctx.lineWidth = 6;
@@ -582,45 +631,66 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
     ctx.stroke();
   });
 
-  // Text animation
-  const greetingY_base = 700;
-  const senderY_base = greetingY_base + 110;
-  ctx.font = "700 62px Cairo";
-  ctx.fillStyle = "#fbf5e6";
-  ctx.shadowBlur = 8;
-  ctx.shadowColor = "#b97f2e";
-  ctx.textAlign = "center";
-
+  // --- TEXT LAYER (all on top, positioned below photos) ---
   const textX = motion.textX;
   const textY = motion.textY;
   const textScale = motion.textScale;
   const textRotate = motion.textRotate;
 
+  // 1. Big animated heading (top)
   ctx.save();
-  ctx.translate(w / 2 + textX, greetingY_base + textY);
-  ctx.rotate(textRotate);
+  ctx.shadowBlur = 12 + motion.textScale * 8;
+  ctx.shadowColor = "rgba(220, 182, 103, 0.8)";
+  ctx.font = "800 78px 'Cinzel', 'Playfair Display', serif";
+  ctx.fillStyle = "#fff3cf";
+  ctx.textAlign = "center";
+  ctx.translate(w / 2 + textX, 180 + textY * 0.6);
+  ctx.rotate(textRotate * 0.5);
   ctx.scale(textScale, textScale);
-  wrapText(ctx, renderData.greeting, 0, 0, 860, 68);
+  ctx.fillText("✨🌙 EID MUBARAK !! 🎉✨", 0, 0);
   ctx.restore();
 
-  ctx.font = "600 44px Cinzel";
-  ctx.fillStyle = "#e6c48b";
+  // 2. Greeting text (below photos)
   ctx.save();
-  ctx.translate(w / 2 + textX * 0.6, senderY_base + textY * 0.7);
-  ctx.rotate(textRotate * 0.7);
-  ctx.scale(textScale * 0.98, textScale * 0.98);
+  ctx.font = "600 46px 'Cairo', 'Poppins', sans-serif";
+  ctx.fillStyle = "#fbf5e6";
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = "#b97f2e";
+  ctx.textAlign = "center";
+  ctx.translate(w / 2 + textX * 0.8, 780 + textY * 0.5);
+  ctx.rotate(textRotate * 0.3);
+  ctx.scale(textScale * 0.96, textScale * 0.96);
+  wrapText(ctx, renderData.greeting, 0, 0, 860, 52);
+  ctx.restore();
+
+  // 3. Sender name (below greeting)
+  ctx.save();
+  ctx.font = "600 48px 'Cairo', 'Poppins', sans-serif";
+  ctx.fillStyle = "#e6c48b";
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = "rgba(0,0,0,0.5)";
+  ctx.textAlign = "center";
+  ctx.translate(w / 2 + textX * 0.9, 880 + textY * 0.8);
+  ctx.rotate(textRotate * 0.2);
+  ctx.scale(textScale * 0.94, textScale * 0.94);
   ctx.fillText(renderData.sender, 0, 0);
   ctx.restore();
 
-  ctx.font = "24px Cairo";
-  ctx.fillStyle = "#ffecb3";
-  ctx.fillText("Created By Mufassir", w - 40, h - 28);
-  ctx.shadowBlur = 0;
+  // 4. Creator signature (bottom-right)
+  ctx.save();
+  ctx.font = "22px 'Cairo', sans-serif";
+  ctx.fillStyle = "rgba(255, 236, 179, 0.9)";
+  ctx.shadowBlur = 3;
+  ctx.shadowColor = "rgba(0,0,0,0.3)";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "bottom";
+  ctx.fillText("Created By Mufassir", w - 32, h - 28);
+  ctx.restore();
 }
 
 const MAX_VIDEO_DURATION_MS = 40000;
 
-// ---------- 9. Build render data (random or custom) ----------
+// ---------- 10. Build render data (random or custom) ----------
 async function buildRenderData() {
   if (!state.uploadedImages.length) throw new Error("Upload at least one photo.");
 
@@ -704,7 +774,7 @@ async function buildRenderData() {
   };
 }
 
-// ---------- 10. Video generation with countdown ----------
+// ---------- 11. Video generation with countdown ----------
 async function generateVideo() {
   if (state.isGenerating) return;
   state.isGenerating = true;
@@ -783,7 +853,7 @@ async function generateVideo() {
   }
 }
 
-// ---------- 11. PNG download ----------
+// ---------- 12. PNG download ----------
 async function onDownloadPng() {
   try {
     if (!state.uploadedImages.length) throw new Error("Upload photos first.");
@@ -800,7 +870,7 @@ async function onDownloadPng() {
   }
 }
 
-// ---------- 12. UI population and event handlers ----------
+// ---------- 13. UI population and event handlers ----------
 function populateTemplates() {
   if (!el.templateGrid) return;
   el.templateGrid.innerHTML = "";
@@ -954,15 +1024,15 @@ function drawPlaceholder() {
   state.ctx.fillStyle = grad;
   state.ctx.fillRect(0, 0, 1080, 1080);
   state.ctx.fillStyle = "#f4d997";
-  state.ctx.font = "700 48px Cinzel";
+  state.ctx.font = "700 48px 'Cinzel', serif";
   state.ctx.textAlign = "center";
   state.ctx.fillText("Eid Video Studio", 540, 480);
-  state.ctx.font = "28px Cairo";
+  state.ctx.font = "28px 'Cairo', sans-serif";
   state.ctx.fillStyle = "#ddd";
   state.ctx.fillText("Upload photos & click Create Video", 540, 580);
 }
 
-// ---------- 13. Initialization ----------
+// ---------- 14. Initialization ----------
 document.addEventListener("DOMContentLoaded", () => {
   el = {
     customModeToggle: document.getElementById("customModeToggle"),
