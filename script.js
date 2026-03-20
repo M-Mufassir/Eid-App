@@ -1,7 +1,7 @@
 // ============================================================
-//  Eid Video Studio – Modern Animation Engine
+//  Eid Video Studio – Full Decorations & Random Animations
 //  Uses local assets: Eid Photos/ & Eid - songs/
-//  Fixed randomness, photo cropping, and video export
+//  Features: ribbons, particles, sparkles, lanterns
 // ============================================================
 
 // ---------- 1. Asset arrays ----------
@@ -192,9 +192,189 @@ function getRandomAnimation() {
   return animations[Math.floor(Math.random() * animations.length)];
 }
 
-// ---------- 4. Global state ----------
+// ---------- 4. Decorative effects helpers ----------
+function createSeededRandom(seed) {
+  let current = seed;
+  return () => {
+    current = (current * 1664525 + 1013904223) >>> 0;
+    return current / 4294967296;
+  };
+}
+
+function createHashSeed(str) {
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function buildDecorations(seed, width, height) {
+  const rand = createSeededRandom(seed);
+  const ribbonColors = ["#dcb667", "#f2dea8", "#98b7dd", "#9ed8c2", "#b49ee2"];
+
+  const ribbons = Array.from({ length: 8 }, () => ({
+    baseX: width * (0.08 + rand() * 0.84),
+    width: 2 + rand() * 4,
+    amplitude: 10 + rand() * 28,
+    speed: 1.2 + rand() * 1.8,
+    phase: rand() * Math.PI * 2,
+    lengthScale: 0.66 + rand() * 0.24,
+    color: ribbonColors[Math.floor(rand() * ribbonColors.length)]
+  }));
+
+  const particles = Array.from({ length: 95 }, () => ({
+    baseX: rand() * width,
+    baseY: rand() * height,
+    radius: 1.1 + rand() * 3.6,
+    speed: 0.08 + rand() * 0.26,
+    drift: 4 + rand() * 36,
+    phase: rand() * Math.PI * 2,
+    swing: 0.9 + rand() * 2.2,
+    twinkle: 1.3 + rand() * 3.4,
+    alpha: 0.25 + rand() * 0.55
+  }));
+
+  const sparkles = Array.from({ length: 28 }, () => ({
+    x: width * (0.04 + rand() * 0.92),
+    y: height * (0.05 + rand() * 0.9),
+    size: 2 + rand() * 4.8,
+    pulseSpeed: 2 + rand() * 4,
+    phase: rand() * Math.PI * 2
+  }));
+
+  return { ribbons, particles, sparkles };
+}
+
+function drawRibbonLayer(ctx, ribbons, timeSec, alpha, height) {
+  ctx.save();
+  ribbons.forEach((ribbon, index) => {
+    const maxY = height * ribbon.lengthScale;
+    const strokeAlpha = alpha * (0.44 + ((index % 3) * 0.1));
+    ctx.globalAlpha = strokeAlpha;
+    ctx.strokeStyle = ribbon.color;
+    ctx.lineWidth = ribbon.width;
+    ctx.beginPath();
+
+    for (let y = -35, first = true; y <= maxY; y += 20) {
+      const wave = Math.sin(timeSec * ribbon.speed + ribbon.phase + y * 0.02) * ribbon.amplitude;
+      const x = ribbon.baseX + wave;
+      if (first) {
+        ctx.moveTo(x, y);
+        first = false;
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+
+    ctx.globalAlpha = strokeAlpha * 0.45;
+    ctx.strokeStyle = "#fff8d8";
+    ctx.lineWidth = Math.max(1, ribbon.width * 0.38);
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+
+function drawParticleLayer(ctx, particles, timeSec, alpha, width, height) {
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+
+  particles.forEach((particle) => {
+    const travel = (particle.baseY / height + timeSec * particle.speed) % 1;
+    const y = height + 50 - travel * (height + 120);
+    const x = particle.baseX + Math.sin(timeSec * particle.swing + particle.phase) * particle.drift;
+    const twinkle = 0.45 + 0.55 * Math.sin(timeSec * particle.twinkle + particle.phase);
+
+    if (x < -30 || x > width + 30) return;
+
+    ctx.globalAlpha = alpha * particle.alpha * twinkle;
+    ctx.fillStyle = "rgba(247, 233, 182, 0.95)";
+    ctx.beginPath();
+    ctx.arc(x, y, particle.radius, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.restore();
+}
+
+function drawSparkle(ctx, x, y, size, alpha) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = "rgba(245, 223, 170, 0.95)";
+  ctx.lineWidth = 1.25;
+
+  ctx.beginPath();
+  ctx.moveTo(-size, 0);
+  ctx.lineTo(size, 0);
+  ctx.moveTo(0, -size);
+  ctx.lineTo(0, size);
+  ctx.stroke();
+
+  ctx.rotate(Math.PI / 4);
+  ctx.beginPath();
+  ctx.moveTo(-size * 0.68, 0);
+  ctx.lineTo(size * 0.68, 0);
+  ctx.moveTo(0, -size * 0.68);
+  ctx.lineTo(0, size * 0.68);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawSparkleLayer(ctx, sparkles, timeSec, alpha) {
+  sparkles.forEach((spark) => {
+    const pulse = (Math.sin(timeSec * spark.pulseSpeed + spark.phase) + 1) / 2;
+    if (pulse < 0.45) return;
+    drawSparkle(ctx, spark.x, spark.y, spark.size * pulse, alpha * pulse * 0.8);
+  });
+}
+
+function drawPatternDetails(ctx, progress, timeSec = 0) {
+  const glow = 0.25 + progress * 0.75;
+
+  ctx.save();
+  ctx.globalAlpha = glow;
+
+  ctx.fillStyle = "rgba(245, 223, 170, 0.88)";
+  ctx.beginPath();
+  ctx.arc(860, 150, 64, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  ctx.arc(888, 150, 56, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.globalCompositeOperation = "source-over";
+  ctx.strokeStyle = "rgba(245, 223, 170, 0.7)";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  const lanternSwing = Math.sin(timeSec * 1.5) * 8;
+  ctx.moveTo(178, 62);
+  ctx.lineTo(178 + lanternSwing * 0.2, 170);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(178 + lanternSwing, 196, 26, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(245, 223, 170, 0.48)";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 9; i++) {
+    ctx.beginPath();
+    ctx.moveTo(120 + i * 95, 965);
+    ctx.lineTo(92 + i * 95, 1010);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ---------- 5. Global state ----------
 let state = {
-  selectedTemplateId: null,     // used only in custom mode
+  selectedTemplateId: null,
   uploadedImages: [],
   customAudioTrack: null,
   isGenerating: false,
@@ -202,10 +382,9 @@ let state = {
   ctx: null
 };
 
-// DOM elements (populated after DOM ready)
 let el = {};
 
-// ---------- 5. Helper functions ----------
+// ---------- 6. Helper functions ----------
 function setStatus(msg, isError = false) {
   if (!el.statusMsg) return;
   el.statusMsg.textContent = msg;
@@ -245,7 +424,7 @@ function isCustomEnabled() {
   return el.customModeToggle?.checked;
 }
 
-// ---------- 6. Image & audio loading ----------
+// ---------- 7. Image & audio loading ----------
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -279,20 +458,17 @@ async function getAudioDuration(src) {
   });
 }
 
-// ---------- 7. Drawing with cover cropping (no distortion) ----------
+// ---------- 8. Drawing with cover cropping (no distortion) ----------
 function drawCover(ctx, img, x, y, w, h) {
-  // Calculate scale to cover the area (maintain aspect ratio, crop excess)
   const imgAspect = img.width / img.height;
   const targetAspect = w / h;
   let drawW, drawH, dx, dy;
   if (imgAspect > targetAspect) {
-    // Image is wider: scale to match height, crop width
     drawH = h;
     drawW = img.width * (h / img.height);
     dx = x + (w - drawW) / 2;
     dy = y;
   } else {
-    // Image is taller: scale to match width, crop height
     drawW = w;
     drawH = img.height * (w / img.width);
     dx = x;
@@ -333,23 +509,30 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   return currentY;
 }
 
+function getEasedProgress(raw) {
+  const t = Math.max(0, Math.min(1, raw));
+  return 1 - Math.pow(1 - t, 3);
+}
+
 function drawGreetingCard(ctx, renderData, progress, animation) {
   const w = renderData.canvasWidth;
   const h = renderData.canvasHeight;
+  const timeSec = progress * (renderData.clipDurationMs / 1000);
+  const entranceProgress = Math.min(1, progress / 0.2);
+  const eased = getEasedProgress(entranceProgress);
+
   ctx.clearRect(0, 0, w, h);
   ctx.drawImage(renderData.templateImage, 0, 0, w, h);
   ctx.fillStyle = "rgba(0,0,0,0.35)";
   ctx.fillRect(0, 0, w, h);
 
-  // Decorative particles
-  ctx.fillStyle = "rgba(244, 217, 151, 0.2)";
-  for (let i = 0; i < 80; i++) {
-    ctx.beginPath();
-    ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 6 + 2, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  // Decorative layers (ribbons, particles, sparkles, pattern)
+  drawRibbonLayer(ctx, renderData.decorations.ribbons, timeSec, 0.85, h);
+  drawPatternDetails(ctx, eased, timeSec);
+  drawParticleLayer(ctx, renderData.decorations.particles, timeSec, 0.52, w, h);
+  drawSparkleLayer(ctx, renderData.decorations.sparkles, timeSec, 0.92);
 
-  // Get animation motion values
+  // Get animation motion
   const t = progress * Math.PI * 2;
   const motion = animation.getMotion(t);
   const photoYoffset = motion.photoY;
@@ -363,7 +546,7 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
     const x = slot.x * w - size / 2;
     const y = slot.y * h - size / 2 + photoYoffset;
 
-    // Draw decorative frame
+    // Frame
     ctx.save();
     if (slot.shape === "circle") {
       ctx.beginPath();
@@ -376,7 +559,7 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
       ctx.fill();
     }
 
-    // Clip to shape and draw photo with cover
+    // Clip and draw photo
     ctx.beginPath();
     if (slot.shape === "circle") {
       ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
@@ -437,7 +620,7 @@ function drawGreetingCard(ctx, renderData, progress, animation) {
 
 const MAX_VIDEO_DURATION_MS = 40000;
 
-// ---------- 8. Build render data (random or custom) ----------
+// ---------- 9. Build render data (random or custom) ----------
 async function buildRenderData() {
   if (!state.uploadedImages.length) throw new Error("Upload at least one photo.");
 
@@ -450,7 +633,6 @@ async function buildRenderData() {
     templateObj = templates.find(t => t.id === state.selectedTemplateId) || templates[0];
   } else {
     templateObj = randomFrom(templates);
-    // Update UI to reflect random template (optional, but nice)
     if (el.templateGrid) {
       const card = document.querySelector(`.template-card[data-id="${templateObj.id}"]`);
       if (card) {
@@ -499,8 +681,13 @@ async function buildRenderData() {
   }
   clipDurationMs = Math.min(MAX_VIDEO_DURATION_MS, Math.max(8000, clipDurationMs));
 
-  // Animation is always random (both modes)
+  // Animation is always random
   const animation = getRandomAnimation();
+
+  // Decorative elements (seeded for consistency)
+  const seedText = `${templateObj.id}|${layout}|${sender}|${greeting}|${Date.now()}|${Math.random()}`;
+  const seed = createHashSeed(seedText);
+  const decorations = buildDecorations(seed, el.canvas.width, el.canvas.height);
 
   return {
     templateImage,
@@ -512,11 +699,12 @@ async function buildRenderData() {
     canvasWidth: 1080,
     canvasHeight: 1080,
     selectedAudioTrack,
-    animation
+    animation,
+    decorations
   };
 }
 
-// ---------- 9. Video generation with countdown ----------
+// ---------- 10. Video generation with countdown ----------
 async function generateVideo() {
   if (state.isGenerating) return;
   state.isGenerating = true;
@@ -527,13 +715,11 @@ async function generateVideo() {
     const durationMs = renderData.clipDurationMs;
     const totalSeconds = durationMs / 1000;
 
-    // Offscreen canvas
     const offCanvas = document.createElement("canvas");
     offCanvas.width = renderData.canvasWidth;
     offCanvas.height = renderData.canvasHeight;
     const offCtx = offCanvas.getContext("2d");
 
-    // Stream setup
     const stream = offCanvas.captureStream(30);
     let audioElement = null;
     const track = renderData.selectedAudioTrack;
@@ -597,7 +783,7 @@ async function generateVideo() {
   }
 }
 
-// ---------- 10. PNG download ----------
+// ---------- 11. PNG download ----------
 async function onDownloadPng() {
   try {
     if (!state.uploadedImages.length) throw new Error("Upload photos first.");
@@ -614,7 +800,7 @@ async function onDownloadPng() {
   }
 }
 
-// ---------- 11. UI population and event handlers ----------
+// ---------- 12. UI population and event handlers ----------
 function populateTemplates() {
   if (!el.templateGrid) return;
   el.templateGrid.innerHTML = "";
@@ -632,7 +818,6 @@ function populateTemplates() {
     };
     el.templateGrid.appendChild(btn);
   });
-  // Initially select first template (custom mode default)
   const firstCard = document.querySelector(".template-card");
   if (firstCard) {
     firstCard.classList.add("active");
@@ -703,16 +888,10 @@ function onAudioSelectChange() {
 
 function onSurprise() {
   if (state.isGenerating) return;
-  // This button sets random mode and random selections
   if (!isCustomEnabled()) {
-    // If already in random mode, just trigger a new random generation
-    // We'll just reload the page? No, better to call generateVideo which already picks random.
-    // But we also want to update UI to reflect random choices? Not necessary, because generateVideo will pick fresh random.
-    setStatus("Surprise! New random generation will happen on next Create Video.");
+    setStatus("Already in Random mode. Click Create Video for a surprise!");
     return;
   }
-  // If custom mode is on, we could offer to randomize custom selections, but let's keep simple:
-  // Switch to random mode and then generate.
   if (el.customModeToggle) el.customModeToggle.checked = false;
   toggleDesignMode();
   setStatus("Switched to Random mode. Click Create Video for surprise!");
@@ -727,7 +906,6 @@ function toggleDesignMode() {
   const mode = getSelectedMode();
   if (el.defaultGreeting) el.defaultGreeting.disabled = !custom || mode !== "default";
   if (el.customGreeting) el.customGreeting.disabled = !custom || mode !== "custom";
-  // Enable/disable template selection in UI
   document.querySelectorAll(".template-card").forEach(card => {
     if (custom) {
       card.style.opacity = "1";
@@ -784,9 +962,8 @@ function drawPlaceholder() {
   state.ctx.fillText("Upload photos & click Create Video", 540, 580);
 }
 
-// ---------- 12. Initialization ----------
+// ---------- 13. Initialization ----------
 document.addEventListener("DOMContentLoaded", () => {
-  // Assign all DOM elements
   el = {
     customModeToggle: document.getElementById("customModeToggle"),
     designModeLabel: document.getElementById("designModeLabel"),
@@ -829,7 +1006,7 @@ document.addEventListener("DOMContentLoaded", () => {
   populateAudioDropdown();
   populateGreetingDropdown();
   bindEvents();
-  toggleDesignMode();  // sets initial UI state
+  toggleDesignMode();
   drawPlaceholder();
   setStatus("Ready. Upload photos and click Create Video.");
 });
