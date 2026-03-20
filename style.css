@@ -115,6 +115,8 @@ body {
   display: grid;
   gap: 0.72rem;
   align-content: start;
+  max-height: calc(100vh - 138px);
+  overflow: auto;
 }
 
 .field {
@@ -253,6 +255,8 @@ textarea:focus {
   transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
   letter-spacing: 0.01em;
   backdrop-filter: blur(4px);
+  min-height: 46px;
+  font-weight: 600;
 }
 
 .btn:hover:enabled {
@@ -333,10 +337,13 @@ textarea:focus {
 @media (max-width: 980px) {
   .app-layout {
     grid-template-columns: 1fr;
+    padding-top: 0.55rem;
   }
 
   .controls-panel {
     order: 2;
+    max-height: unset;
+    overflow: visible;
   }
 
   .preview-panel {
@@ -345,12 +352,42 @@ textarea:focus {
 }
 
 @media (max-width: 520px) {
+  .topbar {
+    margin: 0.45rem auto 0;
+    padding: 0.8rem 0.75rem 0.72rem;
+  }
+
+  .topbar p {
+    font-size: 0.92rem;
+  }
+
+  .controls-panel,
+  .preview-panel {
+    padding: 0.8rem;
+  }
+
   .button-row {
     grid-template-columns: 1fr;
   }
 
   .template-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field > span,
+  .field legend {
+    font-size: 0.95rem;
+  }
+
+  input[type="text"],
+  input[type="file"],
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  .status {
+    font-size: 0.9rem;
   }
 }
 

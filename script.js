@@ -8,27 +8,28 @@ const audioTracks = [
   { id: "none", label: "No background music", src: "" },
   {
     id: "track-1",
-    label: "Eid Song 1",
-    src: "Eid - songs/Eidun Mubarak Everyone_ 🥳(MP3_160K).mp3"
-  },
-  {
-    id: "track-2",
-    label: "Eid Song 2",
+    label: "Eid Song 1 (Built-in)",
     src: "Eid - songs/Eid Mubarak 2025 _ Maher Zain _ Mesut Kurtis - Eid Saeed _ Islamic Nasheed(MP3_160K).mp3"
   },
   {
-    id: "track-3",
-    label: "Eid Song 3",
+    id: "track-2",
+    label: "Eid Song 2 (Built-in)",
     src: "Eid - songs/Greetings Eid Mubarak song_ Harris j- Eid mubarak ft. Sujat Ali _ Iftekhar(MP3_160K).mp3"
   },
   {
+    id: "track-3",
+    label: "Eid Song 3 (Built-in)",
+    src: "Eid - songs/Eid Mubarak Status Video _ Eid Mubarak song by Harris J _ _eidmubarak _statusvideo _shorts(MP3_160K).mp3"
+  },
+  {
     id: "track-4",
-    label: "Eid Song 4",
-    src: "Eid - songs/YAWMUL EID 🌙💚 Maher Zain_s Beautiful Eid Song is OUT NOW_(MP3_160K).mp3"
+    label: "Eid Song 4 (Built-in)",
+    src: "Eid - songs/Eid Mubarak status 2026_ Eid Al Fitr Status 2026 _Eid ul Fitr Status Video 2026_ Eid Whatsapp status(MP3_160K).mp3"
   }
 ];
 
 const CUSTOM_AUDIO_ID = "custom-upload";
+const GIF_EXPORT_ENABLED = false;
 
 const greetings = [
   "Eid Mubarak. May this day bring peace, mercy, and blessings for your home.",
@@ -86,6 +87,7 @@ const layoutSlots = {
 
 const state = {
   selectedTemplateId: templates[0].id,
+  selectedAudioId: "track-1",
   uploadedImageUrls: [],
   customAudioTrack: null,
   isAnimating: false,
@@ -130,6 +132,18 @@ const ctx = el.canvas.getContext("2d");
 
 function pathToUrl(path) {
   return encodeURI(path).replace(/#/g, "%23");
+}
+
+function getMediaSrc(src) {
+  if (!src) {
+    return "";
+  }
+
+  if (/^(blob:|data:|https?:)/i.test(src)) {
+    return src;
+  }
+
+  return pathToUrl(src);
 }
 
 function setStatus(message, isError = false) {
@@ -405,7 +419,7 @@ async function prepareAudioForRecording(selectedTrack) {
     };
   }
 
-  const audioElement = new Audio(pathToUrl(selectedTrack.src));
+  const audioElement = new Audio(getMediaSrc(selectedTrack.src));
   audioElement.preload = "auto";
   await waitForMediaReady(audioElement, exportConfig.audioMetadataTimeoutMs);
 
@@ -485,10 +499,11 @@ function getSelectedTemplate() {
 }
 
 function getSelectedAudioTrack() {
-  if (el.audioSelect.value === CUSTOM_AUDIO_ID && state.customAudioTrack) {
+  const selectedId = el.audioSelect.value || state.selectedAudioId;
+  if (selectedId === CUSTOM_AUDIO_ID && state.customAudioTrack) {
     return state.customAudioTrack;
   }
-  return audioTracks.find((item) => item.id === el.audioSelect.value) || audioTracks[0];
+  return audioTracks.find((item) => item.id === selectedId) || audioTracks[0];
 }
 
 function toTitleFileNames(fileList) {
@@ -505,6 +520,9 @@ function clearCustomAudioTrack() {
   if (state.customAudioTrack?.src) {
     state.audioDurationCache.delete(state.customAudioTrack.src);
     URL.revokeObjectURL(state.customAudioTrack.src);
+  }
+  if (state.selectedAudioId === CUSTOM_AUDIO_ID) {
+    state.selectedAudioId = "track-1";
   }
   state.customAudioTrack = null;
 }
@@ -948,6 +966,14 @@ function populateAudioDropdown() {
     customOption.textContent = state.customAudioTrack.label;
     el.audioSelect.appendChild(customOption);
   }
+
+  const hasPreferred = Array.from(el.audioSelect.options).some((option) => option.value === state.selectedAudioId);
+  if (hasPreferred) {
+    el.audioSelect.value = state.selectedAudioId;
+  } else if (el.audioSelect.options.length > 0) {
+    el.audioSelect.value = el.audioSelect.options[0].value;
+    state.selectedAudioId = el.audioSelect.value;
+  }
 }
 
 function upsertCustomAudioOption() {
@@ -980,7 +1006,8 @@ function prepareAudioPreview() {
     return;
   }
 
-  el.audioPreview.src = pathToUrl(track.src);
+  const resolvedSrc = getMediaSrc(track.src);
+  el.audioPreview.src = resolvedSrc;
   el.audioPreview.load();
   resolveAudioDurationMs(track.src).catch(() => null);
 }
@@ -1006,8 +1033,14 @@ function onCustomAudioUploadChange() {
   };
   upsertCustomAudioOption();
   el.audioSelect.value = CUSTOM_AUDIO_ID;
+  state.selectedAudioId = CUSTOM_AUDIO_ID;
   prepareAudioPreview();
   setStatus("Custom background audio added.");
+}
+
+function onAudioSelectionChange() {
+  state.selectedAudioId = el.audioSelect.value || "none";
+  prepareAudioPreview();
 }
 
 async function buildRenderData() {
@@ -1046,7 +1079,7 @@ async function buildRenderData() {
 
 function enableDownloads(enable) {
   el.downloadPngBtn.disabled = !enable;
-  el.downloadGifBtn.disabled = !enable;
+  el.downloadGifBtn.disabled = true;
   el.downloadVideoBtn.disabled = !enable;
 }
 
@@ -1186,7 +1219,7 @@ async function onGenerateClick() {
 
     await animatePreview(renderData);
     enableDownloads(true);
-    setStatus("Ready. Download PNG, GIF, or Video. Video uses song length (up to 20s).");
+    setStatus("Ready. Download PNG or Video. Video uses selected song length (up to 20s).");
     return true;
   } catch (error) {
     setStatus(error.message, true);
@@ -1229,56 +1262,9 @@ async function onDownloadPngClick() {
 }
 
 async function onDownloadGifClick() {
-  if (typeof GIF === "undefined") {
-    setStatus("GIF library failed to load. Check your internet connection and refresh.", true);
+  if (!GIF_EXPORT_ENABLED) {
+    setStatus("GIF export is unavailable in this offline/mobile-safe build. Use Download Video.", true);
     return;
-  }
-
-  try {
-    if (!state.lastRenderData) {
-      const isGenerated = await onGenerateClick();
-      if (!isGenerated || !state.lastRenderData) {
-        return;
-      }
-    }
-
-    const renderData = state.lastRenderData;
-    const offscreen = document.createElement("canvas");
-    offscreen.width = state.lastRenderData.canvasWidth;
-    offscreen.height = state.lastRenderData.canvasHeight;
-    const offCtx = offscreen.getContext("2d");
-
-    setStatus("Encoding GIF... this can take a few seconds.");
-    el.downloadGifBtn.disabled = true;
-
-    const gif = new GIF({
-      workers: 2,
-      quality: 8,
-      width: offscreen.width,
-      height: offscreen.height,
-      workerScript: "https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js"
-    });
-
-    const fps = exportConfig.gifFps;
-    const frameCount = Math.max(24, Math.round((renderData.clipDurationMs / 1000) * fps));
-
-    for (let i = 0; i < frameCount; i += 1) {
-      const progress = i / (frameCount - 1);
-      drawGreetingCard(offCtx, renderData, progress);
-      gif.addFrame(offCtx, { copy: true, delay: Math.round(1000 / fps) });
-    }
-
-    const gifBlob = await new Promise((resolve) => {
-      gif.on("finished", resolve);
-      gif.render();
-    });
-
-    downloadBlob(gifBlob, timestampedName("gif"));
-    setStatus("GIF downloaded.");
-  } catch (error) {
-    setStatus(error.message, true);
-  } finally {
-    el.downloadGifBtn.disabled = false;
   }
 }
 
@@ -1309,8 +1295,8 @@ async function onDownloadVideoClick() {
     const videoTextAnimation = buildTextAnimation(createHashSeed(`video-text|${Date.now()}|${Math.random()}`));
 
     const offscreen = document.createElement("canvas");
-    offscreen.width = renderData.canvasWidth;
-    offscreen.height = renderData.canvasHeight;
+    offscreen.width = state.lastRenderData.canvasWidth;
+    offscreen.height = state.lastRenderData.canvasHeight;
     const offCtx = offscreen.getContext("2d");
 
     const fps = 30;
@@ -1490,8 +1476,11 @@ function bindEvents() {
     input.addEventListener("change", toggleGreetingInputs);
   });
 
-  el.audioSelect.addEventListener("change", prepareAudioPreview);
+  el.audioSelect.addEventListener("change", onAudioSelectionChange);
   el.customAudioUpload.addEventListener("change", onCustomAudioUploadChange);
+  el.audioPreview.addEventListener("error", () => {
+    setStatus("Selected audio could not be loaded (404/path issue). Choose another built-in song or upload your own.", true);
+  });
   el.generateBtn.addEventListener("click", onGenerateClick);
   el.surpriseBtn.addEventListener("click", onSurpriseClick);
   el.downloadPngBtn.addEventListener("click", onDownloadPngClick);
