@@ -451,6 +451,53 @@ textarea:focus {
   letter-spacing: 0.04em;
 }
 
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  background: rgba(2, 10, 24, 0.56);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.loading-card {
+  min-width: 230px;
+  padding: 1rem 1.1rem 0.88rem;
+  border-radius: 14px;
+  border: 1px solid rgba(244, 217, 151, 0.45);
+  background: rgba(5, 23, 46, 0.88);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+}
+
+.loading-spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 4px solid rgba(244, 217, 151, 0.28);
+  border-top-color: rgba(244, 217, 151, 0.98);
+  animation: spinLoader 900ms linear infinite;
+}
+
+.loading-copy {
+  margin: 0;
+  color: #f6e8c0;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
 #audioPreview {
   width: 100%;
   border-radius: 10px;
@@ -542,5 +589,11 @@ textarea:focus {
   }
   50% {
     transform: translate(12px, -9px) rotate(8deg);
+  }
+}
+
+@keyframes spinLoader {
+  to {
+    transform: rotate(360deg);
   }
 }

@@ -145,6 +145,9 @@ const el = {
   downloadGifBtn: document.getElementById("downloadGifBtn"),
   downloadVideoBtn: document.getElementById("downloadVideoBtn"),
   statusMsg: document.getElementById("statusMsg"),
+  previewSection: document.getElementById("previewSection"),
+  loadingOverlay: document.getElementById("loadingOverlay"),
+  loadingText: document.getElementById("loadingText"),
   canvas: document.getElementById("greetingCanvas")
 };
 
@@ -169,6 +172,31 @@ function getMediaSrc(src) {
 function setStatus(message, isError = false) {
   el.statusMsg.textContent = message;
   el.statusMsg.classList.toggle("error", isError);
+}
+
+function scrollToPreviewSection() {
+  el.previewSection?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function setLoadingOverlay(visible, message = "Processing...") {
+  if (!el.loadingOverlay) {
+    return;
+  }
+
+  if (visible) {
+    el.loadingOverlay.classList.add("active");
+    el.loadingOverlay.setAttribute("aria-hidden", "false");
+    if (el.loadingText) {
+      el.loadingText.textContent = message;
+    }
+    return;
+  }
+
+  el.loadingOverlay.classList.remove("active");
+  el.loadingOverlay.setAttribute("aria-hidden", "true");
 }
 
 function isCustomDesignEnabled() {
@@ -954,6 +982,36 @@ function getFrameFadeProgress(renderData, elapsedMs) {
   return clamp((elapsedMs - renderData.fadeOutStartMs) / fadeDuration, 0, 1);
 }
 
+function drawCountdownOverlay(ctxArg, renderData, elapsedMs, sceneOpacity) {
+  if (!renderData.showCountdown) {
+    return;
+  }
+
+  const remainingMs = Math.max(0, renderData.clipDurationMs - elapsedMs);
+  const remainingSec = Math.ceil(remainingMs / 1000);
+  const label = `${String(remainingSec).padStart(2, "0")}s`;
+  const x = renderData.canvasWidth - 42;
+  const y = 30;
+  const width = 176;
+  const height = 72;
+  const alpha = clamp(0.88 * sceneOpacity, 0.45, 0.92);
+
+  ctxArg.save();
+  ctxArg.globalAlpha = alpha;
+  drawRoundRect(ctxArg, x - width, y, width, height, 14);
+  ctxArg.fillStyle = "rgba(2, 14, 33, 0.72)";
+  ctxArg.fill();
+  ctxArg.strokeStyle = "rgba(244, 217, 151, 0.55)";
+  ctxArg.lineWidth = 1.8;
+  ctxArg.stroke();
+  ctxArg.textAlign = "center";
+  ctxArg.textBaseline = "middle";
+  ctxArg.fillStyle = "#f6e2b0";
+  ctxArg.font = "700 42px Cairo, sans-serif";
+  ctxArg.fillText(label, x - width / 2, y + height / 2 + 1);
+  ctxArg.restore();
+}
+
 function drawGreetingCard(ctxArg, renderData, progress) {
   const timelineProgress = Math.max(0, Math.min(1, progress));
   const elapsedMs = renderData.clipDurationMs * timelineProgress;
@@ -1046,6 +1104,8 @@ function drawGreetingCard(ctxArg, renderData, progress) {
   ctxArg.shadowBlur = 5;
   ctxArg.fillText(CREATOR_SIGNATURE, canvasWidth - 30, canvasHeight - 24);
   ctxArg.restore();
+
+  drawCountdownOverlay(ctxArg, renderData, elapsedMs, sceneOpacity);
 
   drawSparkleLayer(ctxArg, renderData.decorations.sparkles, timeSec, 0.92 * sceneOpacity);
 
@@ -1267,6 +1327,7 @@ async function buildRenderData() {
     animation,
     selectedAudioTrack: selection.selectedAudioTrack,
     isRandomMode: selection.isRandomMode,
+    showCountdown: true,
     sourceDurationMs: timing.sourceDurationMs,
     decorations,
     textAnimation,
@@ -1409,6 +1470,8 @@ async function onGenerateClick() {
 
   try {
     setStatus("Rendering greeting...");
+    scrollToPreviewSection();
+    setLoadingOverlay(true, "Rendering preview...");
     const renderData = await buildRenderData();
     prepareAudioPreview(renderData.selectedAudioTrack);
 
@@ -1438,6 +1501,8 @@ async function onGenerateClick() {
   } catch (error) {
     setStatus(error.message, true);
     return false;
+  } finally {
+    setLoadingOverlay(false);
   }
 }
 
@@ -1497,12 +1562,16 @@ async function onDownloadVideoClick() {
   };
 
   try {
+    setLoadingOverlay(true, "Preparing video...");
+
     if (!state.lastRenderData) {
       const isGenerated = await onGenerateClick();
       if (!isGenerated || !state.lastRenderData) {
         return;
       }
     }
+
+    scrollToPreviewSection();
 
     const selectedTrack = state.lastRenderData.selectedAudioTrack || getSelectedAudioTrack();
     let videoTiming = await resolveVideoTiming(selectedTrack);
@@ -1542,7 +1611,12 @@ async function onDownloadVideoClick() {
       ...state.lastRenderData,
       clipDurationMs: videoTiming.clipDurationMs,
       fadeOutStartMs: videoTiming.fadeOutStartMs,
-      textAnimation: videoTextAnimation
+      textAnimation: videoTextAnimation,
+      showCountdown: false
+    };
+    const previewRenderData = {
+      ...renderData,
+      showCountdown: true
     };
 
     if (videoTiming.wasCapped) {
@@ -1575,6 +1649,7 @@ async function onDownloadVideoClick() {
     recorder.start();
 
     const durationMs = renderData.clipDurationMs;
+    let shownSeconds = null;
 
     if (audioElement) {
       const shouldLoopRecordedAudio = selectedTrack.src
@@ -1591,7 +1666,13 @@ async function onDownloadVideoClick() {
       const step = (time) => {
         const elapsedMs = time - started;
         const progress = Math.min(1, elapsedMs / durationMs);
+        const leftSec = Math.max(0, Math.ceil((durationMs - elapsedMs) / 1000));
+        if (leftSec !== shownSeconds) {
+          shownSeconds = leftSec;
+          setLoadingOverlay(true, `Generating video... ${String(leftSec).padStart(2, "0")}s left`);
+        }
         drawGreetingCard(offCtx, renderData, progress);
+        drawGreetingCard(ctx, previewRenderData, progress);
 
         if (audioElement && Number.isFinite(videoTiming.fadeOutStartMs)) {
           if (elapsedMs >= videoTiming.fadeOutStartMs) {
@@ -1639,6 +1720,7 @@ async function onDownloadVideoClick() {
   } catch (error) {
     setStatus(error.message, true);
   } finally {
+    setLoadingOverlay(false);
     try {
       if (recordedAudio.audioElement) {
         recordedAudio.audioElement.pause();

@@ -119,7 +119,7 @@
       <p id="statusMsg" class="status">Ready. Upload photos and click Generate.</p>
     </section>
 
-    <section class="panel preview-panel" aria-label="Preview">
+    <section id="previewSection" class="panel preview-panel" aria-label="Preview">
       <h2>Preview</h2>
       <div class="canvas-shell">
         <canvas id="greetingCanvas" width="1080" height="1080" aria-label="Generated Eid greeting"></canvas>
@@ -128,5 +128,12 @@
       <p class="creator-tag">Created By Mufassir</p>
     </section>
   </main>
+
+  <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+    <div class="loading-card">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <p id="loadingText" class="loading-copy">Processing...</p>
+    </div>
+  </div>
 </body>
 </html>
