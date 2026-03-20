@@ -320,6 +320,143 @@ async function resolveVideoTiming(selectedTrack) {
   };
 }
 
+function getAnimationFrameState(animation, introEased, timeSec) {
+  const breathe = Math.sin(timeSec * 1.15);
+  const drift = Math.sin(timeSec * 0.72);
+  const pulse = Math.sin(timeSec * 1.9);
+
+  const state = {
+    bgScale: 1,
+    bgOffsetX: drift * 10,
+    bgOffsetY: Math.cos(timeSec * 0.9) * 8,
+    photoScale: 1 + pulse * 0.012,
+    photoOffsetY: breathe * 6,
+    textAlpha: introEased
+  };
+
+  if (animation === "zoom") {
+    const loopScale = 1.015 + Math.sin(timeSec * 0.55) * 0.03;
+    state.bgScale = (1.12 - introEased * 0.1) * loopScale;
+    state.photoScale += Math.sin(timeSec * 1.25) * 0.02;
+  } else if (animation === "slide") {
+    state.bgOffsetY += (1 - introEased) * 70;
+    state.photoOffsetY += (1 - introEased) * 80 + Math.sin(timeSec * 1.6) * 10;
+    state.bgOffsetX += Math.sin(timeSec * 1.05) * 16;
+  } else {
+    // Fade style stays alive throughout the full clip, not only intro.
+    state.textAlpha = clamp(introEased * (0.84 + (Math.sin(timeSec * 1.45) + 1) * 0.08), 0.45, 1);
+    state.bgScale = 1.01 + Math.sin(timeSec * 0.68) * 0.012;
+  }
+
+  return state;
+}
+
+async function waitForMediaReady(mediaElement, timeoutMs = 7000) {
+  if (mediaElement.readyState >= 2) {
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
+    let timeoutId;
+
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      mediaElement.removeEventListener("canplay", onReady);
+      mediaElement.removeEventListener("error", onError);
+    };
+
+    const onReady = () => {
+      cleanup();
+      resolve();
+    };
+
+    const onError = () => {
+      cleanup();
+      reject(new Error("Unable to load selected audio track for video export."));
+    };
+
+    timeoutId = setTimeout(() => {
+      cleanup();
+      reject(new Error("Audio loading timed out. Try another track or check your connection."));
+    }, timeoutMs);
+
+    mediaElement.addEventListener("canplay", onReady);
+    mediaElement.addEventListener("error", onError);
+    mediaElement.load();
+  });
+}
+
+async function prepareAudioForRecording(selectedTrack) {
+  if (!selectedTrack?.src) {
+    return {
+      audioElement: null,
+      audioTracks: [],
+      hasAudioTrack: false,
+      setLevel: () => undefined,
+      cleanup: () => undefined
+    };
+  }
+
+  const audioElement = new Audio(pathToUrl(selectedTrack.src));
+  audioElement.preload = "auto";
+  await waitForMediaReady(audioElement, exportConfig.audioMetadataTimeoutMs);
+
+  const AudioContextRef = window.AudioContext || window.webkitAudioContext;
+  if (AudioContextRef) {
+    try {
+      const audioContext = new AudioContextRef();
+      await audioContext.resume();
+
+      const sourceNode = audioContext.createMediaElementSource(audioElement);
+      const gainNode = audioContext.createGain();
+      const destinationNode = audioContext.createMediaStreamDestination();
+
+      sourceNode.connect(gainNode);
+      gainNode.connect(destinationNode);
+
+      const audioTracks = destinationNode.stream.getAudioTracks();
+      return {
+        audioElement,
+        audioTracks,
+        hasAudioTrack: audioTracks.length > 0,
+        setLevel: (value) => {
+          gainNode.gain.value = clamp(value, 0, 1);
+        },
+        cleanup: () => {
+          sourceNode.disconnect();
+          gainNode.disconnect();
+          destinationNode.disconnect();
+          audioContext.close();
+        }
+      };
+    } catch (_error) {
+      // Fallback to captureStream below.
+    }
+  }
+
+  if (typeof audioElement.captureStream === "function") {
+    const audioStream = audioElement.captureStream();
+    const audioTracks = audioStream.getAudioTracks();
+    return {
+      audioElement,
+      audioTracks,
+      hasAudioTrack: audioTracks.length > 0,
+      setLevel: (value) => {
+        audioElement.volume = clamp(value, 0, 1);
+      },
+      cleanup: () => undefined
+    };
+  }
+
+  return {
+    audioElement,
+    audioTracks: [],
+    hasAudioTrack: false,
+    setLevel: () => undefined,
+    cleanup: () => undefined
+  };
+}
+
 function getSelectedGreeting() {
   const mode = getSelectedMode();
 
@@ -636,24 +773,21 @@ function drawGreetingCard(ctxArg, renderData, progress) {
   const timelineProgress = Math.max(0, Math.min(1, progress));
   const elapsedMs = renderData.clipDurationMs * timelineProgress;
   const timeSec = elapsedMs / 1000;
-  const entranceProgress = Math.min(1, timelineProgress / 0.35);
+  const entranceProgress = Math.min(1, timelineProgress / 0.2);
   const eased = getEasedProgress(entranceProgress);
   const fadeProgress = getFrameFadeProgress(renderData, elapsedMs);
   const sceneOpacity = 1 - fadeProgress;
+  const animationState = getAnimationFrameState(renderData.animation, eased, timeSec);
   const { canvasWidth, canvasHeight } = renderData;
 
   ctxArg.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  if (renderData.animation === "zoom") {
-    const scale = 1.1 - eased * 0.1;
-    const width = canvasWidth * scale;
-    const height = canvasHeight * scale;
-    const x = (canvasWidth - width) / 2;
-    const y = (canvasHeight - height) / 2;
-    fitCover(ctxArg, renderData.templateImage, x, y, width, height);
-  } else {
-    fitCover(ctxArg, renderData.templateImage, 0, 0, canvasWidth, canvasHeight);
-  }
+  const bgScale = animationState.bgScale;
+  const bgWidth = canvasWidth * bgScale;
+  const bgHeight = canvasHeight * bgScale;
+  const bgX = (canvasWidth - bgWidth) / 2 + animationState.bgOffsetX;
+  const bgY = (canvasHeight - bgHeight) / 2 + animationState.bgOffsetY;
+  fitCover(ctxArg, renderData.templateImage, bgX, bgY, bgWidth, bgHeight);
 
   const overlayGradient = ctxArg.createLinearGradient(0, 0, 0, canvasHeight);
   overlayGradient.addColorStop(0, "rgba(3, 15, 33, 0.2)");
@@ -666,9 +800,9 @@ function drawGreetingCard(ctxArg, renderData, progress) {
   drawPatternDetails(ctxArg, eased, timeSec);
   drawParticleLayer(ctxArg, renderData.decorations.particles, timeSec, 0.52 * sceneOpacity, canvasWidth, canvasHeight);
 
-  const textAlpha = (renderData.animation === "fade" ? eased : 1) * sceneOpacity;
-  const slideOffset = renderData.animation === "slide" ? (1 - eased) * 100 : 0;
-  const photoScale = renderData.animation === "zoom" ? 0.88 + eased * 0.12 : 1;
+  const textAlpha = animationState.textAlpha * sceneOpacity;
+  const slideOffset = animationState.photoOffsetY;
+  const photoScale = animationState.photoScale;
 
   const slots = getSlots(renderData.layout, renderData.userImages.length);
 
@@ -877,12 +1011,62 @@ async function animatePreview(renderData) {
 }
 
 function downloadBlob(blob, fileName) {
+  if (!(blob instanceof Blob) || blob.size === 0) {
+    throw new Error("Export failed: empty media file.");
+  }
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = fileName;
+  link.rel = "noopener";
+  document.body.appendChild(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function downloadDataUrl(dataUrl, fileName) {
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = fileName;
+  link.rel = "noopener";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+function isCanvasSecurityError(error) {
+  const name = String(error?.name || "");
+  const message = String(error?.message || "").toLowerCase();
+  return name === "SecurityError" || message.includes("tainted") || message.includes("insecure");
+}
+
+async function exportCanvasPngBlob(canvas) {
+  if (typeof canvas.toBlob === "function") {
+    return await new Promise((resolve, reject) => {
+      try {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error("PNG encoder returned an empty blob."));
+            return;
+          }
+          resolve(blob);
+        }, "image/png");
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // Fallback for browsers without canvas.toBlob support.
+  try {
+    const dataUrl = canvas.toDataURL("image/png");
+    const response = await fetch(dataUrl);
+    return await response.blob();
+  } catch (error) {
+    throw error;
+  }
 }
 
 function timestampedName(extension) {
@@ -896,12 +1080,12 @@ function getPreferredRecorderMime() {
   }
 
   const candidates = [
-    "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
-    "video/mp4;codecs=h264,aac",
-    "video/mp4",
     "video/webm;codecs=vp9,opus",
     "video/webm;codecs=vp8,opus",
-    "video/webm"
+    "video/webm",
+    "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+    "video/mp4;codecs=h264,aac",
+    "video/mp4"
   ];
 
   return candidates.find((mime) => MediaRecorder.isTypeSupported(mime)) || "";
@@ -1010,21 +1194,28 @@ async function onDownloadPngClick() {
       }
     }
 
-    await new Promise((resolve, reject) => {
-      el.canvas.toBlob((blob) => {
-        if (!blob) {
-          reject(new Error("Failed to export PNG."));
-          return;
-        }
+    const fileName = timestampedName("png");
+    let pngBlob;
+    try {
+      pngBlob = await exportCanvasPngBlob(el.canvas);
+      downloadBlob(pngBlob, fileName);
+    } catch (blobError) {
+      if (!isCanvasSecurityError(blobError)) {
+        throw blobError;
+      }
 
-        downloadBlob(blob, timestampedName("png"));
-        resolve();
-      }, "image/png");
-    });
+      // Last chance fallback for strict browser policies.
+      const dataUrl = el.canvas.toDataURL("image/png");
+      downloadDataUrl(dataUrl, fileName);
+    }
 
     setStatus("PNG downloaded.");
   } catch (error) {
-    setStatus(error.message, true);
+    if (isCanvasSecurityError(error)) {
+      setStatus("PNG export blocked by browser security. Run the app via a local server (e.g., npx serve .) instead of opening index.html directly.", true);
+      return;
+    }
+    setStatus(error.message || "Failed to download PNG.", true);
   }
 }
 
@@ -1088,6 +1279,14 @@ async function onDownloadVideoClick() {
     return;
   }
 
+  let recordedAudio = {
+    audioElement: null,
+    audioTracks: [],
+    hasAudioTrack: false,
+    setLevel: () => undefined,
+    cleanup: () => undefined
+  };
+
   try {
     if (!state.lastRenderData) {
       const isGenerated = await onGenerateClick();
@@ -1118,18 +1317,9 @@ async function onDownloadVideoClick() {
     const fps = 30;
     const stream = offscreen.captureStream(fps);
     const tracks = [...stream.getVideoTracks()];
-
-    let audioElement;
-
-    if (selectedTrack.src) {
-      audioElement = new Audio(pathToUrl(selectedTrack.src));
-      audioElement.preload = "auto";
-
-      if (typeof audioElement.captureStream === "function") {
-        const audioStream = audioElement.captureStream();
-        audioStream.getAudioTracks().forEach((track) => tracks.push(track));
-      }
-    }
+    recordedAudio = await prepareAudioForRecording(selectedTrack);
+    const { audioElement } = recordedAudio;
+    recordedAudio.audioTracks.forEach((track) => tracks.push(track));
 
     const mixedStream = new MediaStream(tracks);
     const chosenMimeType = getPreferredRecorderMime();
@@ -1174,9 +1364,9 @@ async function onDownloadVideoClick() {
           if (elapsedMs >= videoTiming.fadeOutStartMs) {
             const fadeWindow = Math.max(1, durationMs - videoTiming.fadeOutStartMs);
             const fadeRatio = clamp((elapsedMs - videoTiming.fadeOutStartMs) / fadeWindow, 0, 1);
-            audioElement.volume = 1 - fadeRatio;
+            recordedAudio.setLevel(1 - fadeRatio);
           } else {
-            audioElement.volume = 1;
+            recordedAudio.setLevel(1);
           }
         }
 
@@ -1197,14 +1387,14 @@ async function onDownloadVideoClick() {
 
     if (audioElement) {
       audioElement.pause();
-      audioElement.volume = 1;
+      recordedAudio.setLevel(1);
     }
 
     const recordedBlob = new Blob(chunks, { type: chosenMimeType });
 
     if (chosenMimeType.startsWith("video/mp4")) {
       downloadBlob(recordedBlob, timestampedName("mp4"));
-      if (selectedTrack.src && !audioElement?.captureStream) {
+      if (selectedTrack.src && !recordedAudio.hasAudioTrack) {
         setStatus("MP4 downloaded. Audio capture was unavailable in this browser.");
       } else if (videoTiming.wasCapped) {
         setStatus("MP4 downloaded. Video ended with fade at 20 seconds.");
@@ -1216,7 +1406,7 @@ async function onDownloadVideoClick() {
       const mp4Blob = await convertVideoBlobToMp4(recordedBlob);
       downloadBlob(mp4Blob, timestampedName("mp4"));
 
-      if (selectedTrack.src && !audioElement?.captureStream) {
+      if (selectedTrack.src && !recordedAudio.hasAudioTrack) {
         setStatus("MP4 downloaded. Audio capture was unavailable in this browser.");
       } else if (videoTiming.wasCapped) {
         setStatus("MP4 downloaded. Video ended with fade at 20 seconds.");
@@ -1226,6 +1416,16 @@ async function onDownloadVideoClick() {
     }
   } catch (error) {
     setStatus(error.message, true);
+  } finally {
+    try {
+      if (recordedAudio.audioElement) {
+        recordedAudio.audioElement.pause();
+        recordedAudio.setLevel(1);
+      }
+      recordedAudio.cleanup();
+    } catch (_cleanupError) {
+      // Ignore cleanup errors.
+    }
   }
 }
 
