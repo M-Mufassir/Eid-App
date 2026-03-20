@@ -28,6 +28,8 @@ const audioTracks = [
   }
 ];
 
+const CUSTOM_AUDIO_ID = "custom-upload";
+
 const greetings = [
   "Eid Mubarak. May this day bring peace, mercy, and blessings for your home.",
   "Wishing you and your loved ones a joyful and spiritually uplifting Eid.",
@@ -85,6 +87,7 @@ const layoutSlots = {
 const state = {
   selectedTemplateId: templates[0].id,
   uploadedImageUrls: [],
+  customAudioTrack: null,
   isAnimating: false,
   animationHandle: null,
   lastRenderData: null,
@@ -95,15 +98,10 @@ const exportConfig = {
   previewDurationMs: 2600,
   clipDurationMs: 4200,
   gifFps: 12,
-  defaultVideoDurationMs: 8000,
+  defaultVideoDurationMs: 20000,
   maxVideoDurationMs: 20000,
   videoFadeDurationMs: 1800,
   audioMetadataTimeoutMs: 7000
-};
-
-const ffmpegState = {
-  instance: null,
-  loadingPromise: null
 };
 
 const el = {
@@ -117,6 +115,7 @@ const el = {
   layoutSelect: document.getElementById("layoutSelect"),
   animationSelect: document.getElementById("animationSelect"),
   audioSelect: document.getElementById("audioSelect"),
+  customAudioUpload: document.getElementById("customAudioUpload"),
   audioPreview: document.getElementById("audioPreview"),
   generateBtn: document.getElementById("generateBtn"),
   surpriseBtn: document.getElementById("surpriseBtn"),
@@ -286,6 +285,23 @@ async function resolveAudioDurationMs(src) {
   return durationMs;
 }
 
+function buildVideoTimingFromDurationMs(durationMs) {
+  const boundedDurationMs = clamp(
+    Math.round(durationMs),
+    1000,
+    exportConfig.maxVideoDurationMs
+  );
+
+  const wasCapped = durationMs > exportConfig.maxVideoDurationMs;
+  return {
+    clipDurationMs: boundedDurationMs,
+    fadeOutStartMs: wasCapped
+      ? Math.max(0, exportConfig.maxVideoDurationMs - exportConfig.videoFadeDurationMs)
+      : null,
+    wasCapped
+  };
+}
+
 async function resolveVideoTiming(selectedTrack) {
   const fallback = {
     clipDurationMs: exportConfig.defaultVideoDurationMs,
@@ -303,20 +319,12 @@ async function resolveVideoTiming(selectedTrack) {
     return fallback;
   }
 
-  if (sourceDurationMs > exportConfig.maxVideoDurationMs) {
-    return {
-      clipDurationMs: exportConfig.maxVideoDurationMs,
-      sourceDurationMs,
-      fadeOutStartMs: Math.max(0, exportConfig.maxVideoDurationMs - exportConfig.videoFadeDurationMs),
-      wasCapped: true
-    };
-  }
-
+  const timing = buildVideoTimingFromDurationMs(sourceDurationMs);
   return {
-    clipDurationMs: sourceDurationMs,
+    clipDurationMs: timing.clipDurationMs,
     sourceDurationMs,
-    fadeOutStartMs: null,
-    wasCapped: false
+    fadeOutStartMs: timing.fadeOutStartMs,
+    wasCapped: timing.wasCapped
   };
 }
 
@@ -477,6 +485,9 @@ function getSelectedTemplate() {
 }
 
 function getSelectedAudioTrack() {
+  if (el.audioSelect.value === CUSTOM_AUDIO_ID && state.customAudioTrack) {
+    return state.customAudioTrack;
+  }
   return audioTracks.find((item) => item.id === el.audioSelect.value) || audioTracks[0];
 }
 
@@ -488,6 +499,14 @@ function toTitleFileNames(fileList) {
 function clearUploadedUrls() {
   state.uploadedImageUrls.forEach((url) => URL.revokeObjectURL(url));
   state.uploadedImageUrls = [];
+}
+
+function clearCustomAudioTrack() {
+  if (state.customAudioTrack?.src) {
+    state.audioDurationCache.delete(state.customAudioTrack.src);
+    URL.revokeObjectURL(state.customAudioTrack.src);
+  }
+  state.customAudioTrack = null;
 }
 
 function updateUploadSummary(files) {
@@ -922,6 +941,33 @@ function populateAudioDropdown() {
     option.textContent = track.label;
     el.audioSelect.appendChild(option);
   });
+
+  if (state.customAudioTrack) {
+    const customOption = document.createElement("option");
+    customOption.value = CUSTOM_AUDIO_ID;
+    customOption.textContent = state.customAudioTrack.label;
+    el.audioSelect.appendChild(customOption);
+  }
+}
+
+function upsertCustomAudioOption() {
+  const existing = el.audioSelect.querySelector(`option[value="${CUSTOM_AUDIO_ID}"]`);
+  if (!state.customAudioTrack) {
+    if (existing) {
+      existing.remove();
+    }
+    return;
+  }
+
+  if (existing) {
+    existing.textContent = state.customAudioTrack.label;
+    return;
+  }
+
+  const option = document.createElement("option");
+  option.value = CUSTOM_AUDIO_ID;
+  option.textContent = state.customAudioTrack.label;
+  el.audioSelect.appendChild(option);
 }
 
 function prepareAudioPreview() {
@@ -937,6 +983,31 @@ function prepareAudioPreview() {
   el.audioPreview.src = pathToUrl(track.src);
   el.audioPreview.load();
   resolveAudioDurationMs(track.src).catch(() => null);
+}
+
+function onCustomAudioUploadChange() {
+  const file = el.customAudioUpload.files?.[0];
+  if (!file) {
+    return;
+  }
+
+  if (!file.type.startsWith("audio/")) {
+    setStatus("Please upload a valid audio file.", true);
+    el.customAudioUpload.value = "";
+    return;
+  }
+
+  clearCustomAudioTrack();
+  const objectUrl = URL.createObjectURL(file);
+  state.customAudioTrack = {
+    id: CUSTOM_AUDIO_ID,
+    label: `Custom: ${file.name}`,
+    src: objectUrl
+  };
+  upsertCustomAudioOption();
+  el.audioSelect.value = CUSTOM_AUDIO_ID;
+  prepareAudioPreview();
+  setStatus("Custom background audio added.");
 }
 
 async function buildRenderData() {
@@ -1074,6 +1145,13 @@ function timestampedName(extension) {
   return `eid-greeting-${stamp}.${extension}`;
 }
 
+function getVideoExtensionFromMime(mimeType) {
+  if (mimeType?.includes("mp4")) {
+    return "mp4";
+  }
+  return "webm";
+}
+
 function getPreferredRecorderMime() {
   if (typeof MediaRecorder === "undefined") {
     return "";
@@ -1089,75 +1167,6 @@ function getPreferredRecorderMime() {
   ];
 
   return candidates.find((mime) => MediaRecorder.isTypeSupported(mime)) || "";
-}
-
-async function ensureFfmpegLoaded() {
-  if (ffmpegState.instance) {
-    return ffmpegState.instance;
-  }
-
-  if (ffmpegState.loadingPromise) {
-    return ffmpegState.loadingPromise;
-  }
-
-  ffmpegState.loadingPromise = (async () => {
-    if (typeof FFmpegWASM === "undefined" || typeof FFmpegUtil === "undefined") {
-      throw new Error("FFmpeg libraries are unavailable. Refresh the page and try MP4 export again.");
-    }
-
-    const { FFmpeg } = FFmpegWASM;
-    const { toBlobURL } = FFmpegUtil;
-    const ffmpeg = new FFmpeg();
-    const coreBase = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd";
-
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${coreBase}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await toBlobURL(`${coreBase}/ffmpeg-core.wasm`, "application/wasm")
-    });
-
-    ffmpegState.instance = ffmpeg;
-    return ffmpeg;
-  })().finally(() => {
-    ffmpegState.loadingPromise = null;
-  });
-
-  return ffmpegState.loadingPromise;
-}
-
-async function convertVideoBlobToMp4(videoBlob) {
-  const ffmpeg = await ensureFfmpegLoaded();
-  const { fetchFile } = FFmpegUtil;
-  const inputName = `input-${Date.now()}.webm`;
-  const outputName = `output-${Date.now()}.mp4`;
-
-  await ffmpeg.writeFile(inputName, await fetchFile(videoBlob));
-  await ffmpeg.exec([
-    "-i",
-    inputName,
-    "-map",
-    "0:v:0",
-    "-map",
-    "0:a?",
-    "-c:v",
-    "libx264",
-    "-preset",
-    "veryfast",
-    "-pix_fmt",
-    "yuv420p",
-    "-movflags",
-    "+faststart",
-    "-c:a",
-    "aac",
-    "-b:a",
-    "160k",
-    outputName
-  ]);
-
-  const outputData = await ffmpeg.readFile(outputName);
-  await ffmpeg.deleteFile(inputName);
-  await ffmpeg.deleteFile(outputName);
-
-  return new Blob([outputData], { type: "video/mp4" });
 }
 
 async function onGenerateClick() {
@@ -1177,7 +1186,7 @@ async function onGenerateClick() {
 
     await animatePreview(renderData);
     enableDownloads(true);
-    setStatus("Ready. Download PNG, GIF, or MP4. Video uses song length (up to 20s).");
+    setStatus("Ready. Download PNG, GIF, or Video. Video uses song length (up to 20s).");
     return true;
   } catch (error) {
     setStatus(error.message, true);
@@ -1235,8 +1244,8 @@ async function onDownloadGifClick() {
 
     const renderData = state.lastRenderData;
     const offscreen = document.createElement("canvas");
-    offscreen.width = renderData.canvasWidth;
-    offscreen.height = renderData.canvasHeight;
+    offscreen.width = state.lastRenderData.canvasWidth;
+    offscreen.height = state.lastRenderData.canvasHeight;
     const offCtx = offscreen.getContext("2d");
 
     setStatus("Encoding GIF... this can take a few seconds.");
@@ -1296,18 +1305,8 @@ async function onDownloadVideoClick() {
     }
 
     const selectedTrack = getSelectedAudioTrack();
-    const videoTiming = await resolveVideoTiming(selectedTrack);
+    let videoTiming = await resolveVideoTiming(selectedTrack);
     const videoTextAnimation = buildTextAnimation(createHashSeed(`video-text|${Date.now()}|${Math.random()}`));
-    const renderData = {
-      ...state.lastRenderData,
-      clipDurationMs: videoTiming.clipDurationMs,
-      fadeOutStartMs: videoTiming.fadeOutStartMs,
-      textAnimation: videoTextAnimation
-    };
-
-    if (videoTiming.wasCapped) {
-      setStatus("Song is longer than 20s. Video will fade out and end at 20 seconds.");
-    }
 
     const offscreen = document.createElement("canvas");
     offscreen.width = renderData.canvasWidth;
@@ -1320,6 +1319,35 @@ async function onDownloadVideoClick() {
     recordedAudio = await prepareAudioForRecording(selectedTrack);
     const { audioElement } = recordedAudio;
     recordedAudio.audioTracks.forEach((track) => tracks.push(track));
+
+    // If metadata lookup failed earlier, use actual loaded audio duration when available.
+    if (
+      selectedTrack.src &&
+      !videoTiming.sourceDurationMs &&
+      audioElement &&
+      isValidDuration(audioElement.duration)
+    ) {
+      const derivedDurationMs = Math.round(audioElement.duration * 1000);
+      const derivedTiming = buildVideoTimingFromDurationMs(derivedDurationMs);
+      videoTiming = {
+        ...videoTiming,
+        sourceDurationMs: derivedDurationMs,
+        clipDurationMs: derivedTiming.clipDurationMs,
+        fadeOutStartMs: derivedTiming.fadeOutStartMs,
+        wasCapped: derivedTiming.wasCapped
+      };
+    }
+
+    const renderData = {
+      ...state.lastRenderData,
+      clipDurationMs: videoTiming.clipDurationMs,
+      fadeOutStartMs: videoTiming.fadeOutStartMs,
+      textAnimation: videoTextAnimation
+    };
+
+    if (videoTiming.wasCapped) {
+      setStatus("Song is longer than 20s. Video will fade out and end at 20 seconds.");
+    }
 
     const mixedStream = new MediaStream(tracks);
     const chosenMimeType = getPreferredRecorderMime();
@@ -1342,7 +1370,7 @@ async function onDownloadVideoClick() {
     if (chosenMimeType.startsWith("video/mp4")) {
       setStatus("Recording MP4 video...");
     } else {
-      setStatus("Recording animation for MP4 conversion...");
+      setStatus("Recording WebM video...");
     }
     recorder.start();
 
@@ -1390,29 +1418,17 @@ async function onDownloadVideoClick() {
       recordedAudio.setLevel(1);
     }
 
+    const extension = getVideoExtensionFromMime(chosenMimeType);
     const recordedBlob = new Blob(chunks, { type: chosenMimeType });
+    downloadBlob(recordedBlob, timestampedName(extension));
 
-    if (chosenMimeType.startsWith("video/mp4")) {
-      downloadBlob(recordedBlob, timestampedName("mp4"));
-      if (selectedTrack.src && !recordedAudio.hasAudioTrack) {
-        setStatus("MP4 downloaded. Audio capture was unavailable in this browser.");
-      } else if (videoTiming.wasCapped) {
-        setStatus("MP4 downloaded. Video ended with fade at 20 seconds.");
-      } else {
-        setStatus("MP4 downloaded.");
-      }
+    const label = extension.toUpperCase();
+    if (selectedTrack.src && !recordedAudio.hasAudioTrack) {
+      setStatus(`${label} downloaded. Audio capture was unavailable in this browser.`);
+    } else if (videoTiming.wasCapped) {
+      setStatus(`${label} downloaded. Video ended with fade at 20 seconds.`);
     } else {
-      setStatus("Converting to MP4 with FFmpeg... this may take some time.");
-      const mp4Blob = await convertVideoBlobToMp4(recordedBlob);
-      downloadBlob(mp4Blob, timestampedName("mp4"));
-
-      if (selectedTrack.src && !recordedAudio.hasAudioTrack) {
-        setStatus("MP4 downloaded. Audio capture was unavailable in this browser.");
-      } else if (videoTiming.wasCapped) {
-        setStatus("MP4 downloaded. Video ended with fade at 20 seconds.");
-      } else {
-        setStatus("MP4 downloaded.");
-      }
+      setStatus(`${label} downloaded.`);
     }
   } catch (error) {
     setStatus(error.message, true);
@@ -1475,13 +1491,17 @@ function bindEvents() {
   });
 
   el.audioSelect.addEventListener("change", prepareAudioPreview);
+  el.customAudioUpload.addEventListener("change", onCustomAudioUploadChange);
   el.generateBtn.addEventListener("click", onGenerateClick);
   el.surpriseBtn.addEventListener("click", onSurpriseClick);
   el.downloadPngBtn.addEventListener("click", onDownloadPngClick);
   el.downloadGifBtn.addEventListener("click", onDownloadGifClick);
   el.downloadVideoBtn.addEventListener("click", onDownloadVideoClick);
 
-  window.addEventListener("beforeunload", clearUploadedUrls);
+  window.addEventListener("beforeunload", () => {
+    clearUploadedUrls();
+    clearCustomAudioTrack();
+  });
 }
 
 function drawInitialCanvas() {

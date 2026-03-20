@@ -27,9 +27,10 @@ A static frontend web app that creates personalized Eid greeting media using you
 - Export options:
   - PNG download
   - Animated GIF download (`gif.js`)
-  - MP4 download (direct if supported, otherwise WebM capture + FFmpeg WASM conversion)
-  - MP4 duration follows selected song duration, capped at 20 seconds with fade-out at the end when capped
+  - Video download in browser-supported format (`.webm` or `.mp4`)
+  - Video duration follows selected song duration, capped at 20 seconds with fade-out at the end when capped
 - Optional music selection (tracks from `Eid - songs`)
+- Upload your own custom background audio file (`audio/*`)
 - `Surprise Me` button randomizes template, layout, animation, and greeting mode
 
 ## Project Structure
@@ -85,7 +86,5 @@ You can also open `index.html` directly, but a local server gives better compati
 ## Browser Notes
 
 - GIF export requires internet access to load `gif.js` worker from CDN.
-- MP4 conversion fallback requires internet access to load FFmpeg WASM core files from CDN.
-- MP4 export may take longer on browsers that do not support direct MP4 recording (client-side FFmpeg conversion is used).
 - Audio capture depends on browser support for `HTMLMediaElement.captureStream`.
-- If audio capture is unsupported, MP4 export still works (video-only stream).
+- If audio capture is unsupported, video export still works (video-only stream).
