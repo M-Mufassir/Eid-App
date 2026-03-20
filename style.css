@@ -443,6 +443,14 @@ textarea:focus {
   font-size: 0.92rem;
 }
 
+.creator-tag {
+  margin: 0.2rem 0 0;
+  text-align: right;
+  color: rgba(244, 217, 151, 0.82);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
 #audioPreview {
   width: 100%;
   border-radius: 10px;

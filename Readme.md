@@ -5,7 +5,7 @@ A static frontend web app that creates personalized Eid greeting media using you
 ## Features
 
 - Mobile-responsive UI with modern Eid styling
-- Upload 1 to 3 personal photos
+- Upload 1 to 3 personal photos (JPG, JPEG, PNG, WEBP, AVIF, GIF, BMP, TIFF, HEIC/HEIF, SVG when browser supports decoding)
 - Add sender name (for example: `From Mufassir & Family`)
 - `Randomness ON` mode by default (only image + sender name needed)
   - Auto-randomizes template, greeting wish, animation style, and background song each generation
@@ -21,6 +21,7 @@ A static frontend web app that creates personalized Eid greeting media using you
   - Framed user photos (circle or rounded)
   - Wrapped greeting text
   - Sender signature
+  - Bottom-right creator watermark: `Created By Mufassir`
 - Animation styles:
   - Fade
   - Zoom

@@ -43,8 +43,8 @@ const audioTracks = [
 
 const CUSTOM_AUDIO_ID = "custom-upload";
 const GIF_EXPORT_ENABLED = false;
+const CREATOR_SIGNATURE = "Created By Mufassir";
 const IMAGE_MAX_DIMENSION = 3000;
-const IMAGE_NAME_PATTERN = /\.(avif|bmp|gif|heic|heif|jpe?g|jfif|png|tiff?|webp)$/i;
 
 const greetings = [
   "Eid Mubarak. May this day bring peace, mercy, and blessings for your home.",
@@ -614,18 +614,6 @@ function updateUploadSummary(files) {
   el.uploadList.textContent = `${files.length} selected: ${toTitleFileNames(files)}`;
 }
 
-function isLikelyImageFile(file) {
-  if (!file) {
-    return false;
-  }
-
-  if (file.type?.startsWith("image/")) {
-    return true;
-  }
-
-  return IMAGE_NAME_PATTERN.test(file.name || "");
-}
-
 function loadImage(source) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -696,15 +684,11 @@ async function decodeImageFromFile(file) {
 }
 
 async function loadUploadedImage(file) {
-  if (!isLikelyImageFile(file)) {
-    throw new Error(`"${file.name}" is not a supported image file.`);
-  }
-
   try {
     const decoded = await decodeImageFromFile(file);
     return normalizeImageForCanvas(decoded);
   } catch (_error) {
-    throw new Error(`Unable to read "${file.name}". Try JPG, PNG, WEBP, or AVIF.`);
+    throw new Error(`Unable to read "${file.name}". Try JPG, JPEG, PNG, WEBP, AVIF, or other image formats.`);
   }
 }
 
@@ -1050,6 +1034,17 @@ function drawGreetingCard(ctxArg, renderData, progress) {
   ctxArg.shadowColor = `rgba(220, 182, 103, ${0.2 + senderMotion.glow * 0.3})`;
   ctxArg.shadowBlur = 8 + senderMotion.glow * 12;
   ctxArg.fillText(renderData.sender, 0, 0);
+  ctxArg.restore();
+
+  ctxArg.save();
+  ctxArg.globalAlpha = clamp(0.72 * sceneOpacity, 0, 1);
+  ctxArg.textAlign = "right";
+  ctxArg.textBaseline = "bottom";
+  ctxArg.fillStyle = "rgba(244, 217, 151, 0.95)";
+  ctxArg.font = "600 28px Cairo, sans-serif";
+  ctxArg.shadowColor = "rgba(0, 0, 0, 0.32)";
+  ctxArg.shadowBlur = 5;
+  ctxArg.fillText(CREATOR_SIGNATURE, canvasWidth - 30, canvasHeight - 24);
   ctxArg.restore();
 
   drawSparkleLayer(ctxArg, renderData.decorations.sparkles, timeSec, 0.92 * sceneOpacity);
@@ -1692,16 +1687,9 @@ function bindEvents() {
       setStatus("Only the first 3 photos are used.");
     }
 
-    const validFiles = files.filter((file) => isLikelyImageFile(file));
     clearUploadedImages();
-    state.uploadedImages = validFiles;
-    updateUploadSummary(validFiles);
-
-    if (files.length && !validFiles.length) {
-      setStatus("No valid images found. Try JPG, PNG, WEBP, or AVIF.", true);
-    } else if (validFiles.length < files.length) {
-      setStatus("Some files were skipped because they are not recognized image formats.", true);
-    }
+    state.uploadedImages = files;
+    updateUploadSummary(files);
 
     enableDownloads(false);
   });
